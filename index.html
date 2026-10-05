@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Management operațional | Construiește-ți fabrica</title>
+<meta name="theme-color" content="#0FA3A3">
+<meta name="description" content="Exerciții, studii de caz și grile pentru cursul de Management operațional, anul III, ASE București.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏭</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EEF5F9;--card:#FFFFFF;--ink:#1D2B3A;--muted:#5E7085;--line:#D8E3EC;
+  --teal:#0FA3A3;--teal-d:#0A7F80;--yellow:#FFC93C;--yellow-d:#D9A200;--coral:#FF6B5B;--coral-d:#D94A3B;--violet:#7C5CFF;
+  --green:#1FA971;--green-d:#168055;--green-bg:#E2F6EC;--coral-bg:#FFE8E4;--amber-bg:#FFF3D3;--amber:#B07A00;
+  --r:18px;
+  font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0F1821;--card:#182431;--ink:#E8EFF6;--muted:#9BACBE;--line:#2A3A4A;
+  --teal:#2CC4C2;--teal-d:#18908F;--green:#3ACB8C;--green-d:#22955F;--green-bg:#123527;--coral-bg:#3D1C19;--amber-bg:#3A2D0E;--amber:#FFC93C;}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.5;font-weight:600;font-variant-numeric:tabular-nums;overflow-x:hidden}
+#app{max-width:640px;margin:0 auto;padding:0 16px 40px;min-height:100dvh}
+#app.v-card{display:flex;flex-direction:column;padding-bottom:0}
+#app.v-card .cta,#app.v-card .sheet{margin-top:auto}
+#app.v-card .card{margin-bottom:16px}
+a{color:var(--teal-d)}
+:focus-visible{outline:3px solid var(--violet);outline-offset:2px;border-radius:10px}
+h1,h2{font-weight:900;line-height:1.12;margin:0}
+.kick{margin:0;color:var(--muted);font-size:.9rem;font-weight:700}
+.err{color:var(--coral-d)}
+
+/* ---------- butoane 3D ---------- */
+.btn{font:inherit;font-weight:800;font-size:1rem;border:0;border-radius:16px;padding:12px 20px;min-height:48px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--teal);color:#fff;box-shadow:0 4px 0 var(--teal-d);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--teal-d)}
+.btn:disabled{background:var(--line);color:var(--muted);box-shadow:0 4px 0 color-mix(in srgb,var(--line) 70%,#000);cursor:not-allowed;transform:none}
+.btn.big{font-size:1.08rem;padding:14px 24px;min-height:54px}
+.btn.full{width:100%}
+.btn.ghost{background:var(--card);color:var(--teal-d);box-shadow:0 0 0 2px var(--line) inset,0 4px 0 var(--line)}
+.btn.ghost:active{box-shadow:0 0 0 2px var(--line) inset,0 1px 0 var(--line)}
+.btn.danger{color:var(--coral-d)}
+.link{background:none;border:0;color:var(--teal-d);font:inherit;font-weight:800;padding:10px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- HUD ---------- */
+.hud{position:sticky;top:0;z-index:6;margin:0 -16px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px)}
+.hrow{display:flex;align-items:center;gap:12px}
+.av{width:46px;height:46px;border-radius:14px;background:var(--card);display:grid;place-items:center;font-size:1.6rem;box-shadow:0 3px 0 var(--line)}
+.hinfo{flex:1;min-width:0}
+.hg{font-weight:900;font-size:1rem}
+.xpb{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:3px 0}
+.xpb i{display:block;height:100%;background:linear-gradient(90deg,var(--violet),#B07CFF);border-radius:6px;transition:width .6s}
+.hx{font-size:.78rem;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hstats{display:flex;flex-direction:column;gap:2px;font-weight:900;font-size:.95rem;text-align:right}
+
+/* ---------- intro hartă ---------- */
+.intro{padding:18px 4px 4px;text-align:center}
+.intro h1{font-size:clamp(2rem,8.4vw,2.8rem);color:var(--ink)}
+.intro p{margin:8px auto 0;max-width:34ch;color:var(--muted)}
+.intro .pc{display:inline-block;margin-top:12px;padding:6px 14px;border-radius:999px;background:var(--yellow);color:#3A2A00;font-weight:900}
+
+/* ---------- harta ---------- */
+.map{position:relative;list-style:none;margin:10px 0 0;padding:10px 0 20px}
+.path{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.pbase{fill:none;stroke:color-mix(in srgb,var(--teal) 22%,var(--line));stroke-width:14;stroke-linecap:round}
+.pdash{fill:none;stroke:var(--card);stroke-width:3;stroke-dasharray:10 12;stroke-linecap:round;animation:belt 1.6s linear infinite}
+@keyframes belt{to{stroke-dashoffset:-44}}
+.node{position:relative;display:flex;justify-content:center;margin:4px 0}
+.nl{transform:translateX(var(--x));position:relative;display:flex;flex-direction:column;align-items:center;text-decoration:none;color:var(--ink);width:170px}
+.nl:active .hall{transform:scale(.95)}
+.hall{width:150px;height:auto;display:block;transition:transform .15s;filter:drop-shadow(0 6px 0 rgba(30,50,70,.08))}
+.nt{margin-top:-2px;font-size:.88rem;font-weight:800;text-align:center;line-height:1.25;background:var(--card);padding:5px 10px;border-radius:12px;box-shadow:0 3px 0 var(--line)}
+.nt b{color:var(--teal-d);margin-right:3px}
+.node.next .hall{animation:bob 1.8s ease-in-out infinite}
+.here{position:absolute;top:-6px;z-index:2;background:var(--violet);color:#fff;font-size:.78rem;font-weight:900;padding:4px 10px;border-radius:10px;white-space:nowrap}
+.here::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:var(--violet)}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.hall .smoke circle{fill:#C9D6E2;opacity:0;animation:smoke 2.6s ease-out infinite}
+.hall .smoke circle:nth-child(2){animation-delay:.8s}.hall .smoke circle:nth-child(3){animation-delay:1.6s}
+@keyframes smoke{0%{opacity:0;transform:translateY(8px)}30%{opacity:.85}100%{opacity:0;transform:translateY(-10px)}}
+
+/* ---------- insigne ---------- */
+.sect{margin-top:30px}
+.sect h2,.sect summary{font-size:1.3rem;font-weight:900}
+.bgs{list-style:none;padding:0;margin:12px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.bdg{background:var(--card);border-radius:16px;padding:12px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;box-shadow:0 3px 0 var(--line);opacity:.6}
+.bdg.has{opacity:1;box-shadow:0 3px 0 var(--yellow-d);outline:2px solid var(--yellow)}
+.be{font-size:1.9rem;line-height:1.2}
+.bn{font-weight:900;font-size:.9rem}
+.bd{font-size:.74rem;color:var(--muted);font-weight:600;line-height:1.3}
+.tools{background:var(--card);border-radius:var(--r);padding:6px 16px 14px;box-shadow:0 3px 0 var(--line)}
+.tools summary{cursor:pointer;font-size:1.05rem;padding:10px 0;min-height:44px}
+.tools p{color:var(--muted);font-weight:600}
+.tb{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.foot{margin:28px 0 0;color:var(--muted);font-size:.82rem;font-weight:600;text-align:center}
+
+/* ---------- bara lecției ---------- */
+.lt{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:10px;margin:0 -16px;padding:10px 16px;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(8px)}
+.x{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;font-size:1.25rem;text-decoration:none;color:var(--muted);font-weight:900}
+.segs{flex:1;display:flex;gap:3px;align-items:center}
+.seg{flex:1;height:12px;border:0;padding:0;border-radius:6px;background:var(--line);cursor:pointer;min-width:0}
+.seg.ok{background:var(--green)}.seg.pt{background:var(--yellow)}.seg.no{background:var(--coral)}
+.seg.cur{height:16px;box-shadow:0 0 0 2px var(--ink)}
+.streak{font-weight:900;font-size:.95rem;white-space:nowrap;color:var(--muted)}
+.streak.hot{color:var(--coral-d);animation:flame 1s ease-in-out infinite}
+@keyframes flame{50%{transform:scale(1.12)}}
+
+/* ---------- card ---------- */
+.card{background:var(--card);border-radius:24px;padding:18px 18px 22px;margin:10px 0 0;box-shadow:0 5px 0 var(--line)}
+.card.ok{box-shadow:0 5px 0 var(--green)}.card.no{box-shadow:0 5px 0 var(--coral)}.card.pt{box-shadow:0 5px 0 var(--yellow)}
+.ck{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.tag{font-size:.78rem;font-weight:900;padding:4px 10px;border-radius:999px;color:#fff;background:var(--teal)}
+.t-case{background:var(--violet)}.t-classify{background:#1E9BD7}.t-order{background:#EF5D7A}.t-calc{background:#F5A623;color:#3A2A00}
+.cn{font-size:.85rem;color:var(--muted);font-weight:800}
+.q{font-size:1.2rem;font-weight:800;margin:4px 0 14px;line-height:1.35}
+.sub{font-size:.85rem;color:var(--muted);margin:-6px 0 12px}
+.ctx{background:color-mix(in srgb,var(--violet) 10%,var(--card));border-radius:16px;padding:12px 14px;margin-bottom:12px;font-weight:600}
+.ctxk{display:block;font-size:.78rem;font-weight:900;color:var(--violet);margin-bottom:2px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--card);box-shadow:0 0 0 2px var(--line) inset,0 4px 0 var(--line);cursor:pointer;min-height:56px;transition:transform .08s}
+.opt:active{transform:translateY(2px)}
+.opt input[type=radio],.opt input[type=radio]:disabled{position:absolute;opacity:0!important;pointer-events:none;width:1px;height:1px;min-height:0;padding:0;border:0;margin:0}
+.ol{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:.9rem;color:var(--muted);box-shadow:0 0 0 2px var(--line) inset}
+.ot{font-weight:700;line-height:1.35}
+.opt.sel{box-shadow:0 0 0 2.5px var(--teal) inset,0 4px 0 var(--teal-d);background:color-mix(in srgb,var(--teal) 9%,var(--card))}
+.opt.sel .ol{background:var(--teal);color:#fff;box-shadow:none}
+.opt.right{box-shadow:0 0 0 2.5px var(--green) inset,0 4px 0 var(--green-d);background:var(--green-bg)}
+.opt.right .ol{background:var(--green);color:#fff;box-shadow:none}
+.opt.wrong{box-shadow:0 0 0 2.5px var(--coral) inset,0 4px 0 var(--coral-d);background:var(--coral-bg)}
+.opt.wrong .ol{background:var(--coral);color:#fff;box-shadow:none}
+.opt:has(input:focus-visible){outline:3px solid var(--violet)}
+.rows{display:flex;flex-direction:column;gap:14px}
+.row{padding:12px;border-radius:16px;background:color-mix(in srgb,var(--line) 35%,var(--card))}
+.row.right{background:var(--green-bg)}.row.wrong{background:var(--coral-bg)}
+.rt{display:block;font-weight:800;margin-bottom:8px;line-height:1.35}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font:inherit;font-weight:800;font-size:.86rem;border:0;border-radius:12px;padding:8px 12px;min-height:40px;background:var(--card);color:var(--ink);box-shadow:0 0 0 2px var(--line) inset,0 3px 0 var(--line);cursor:pointer;text-align:left}
+.chip.on{background:var(--teal);color:#fff;box-shadow:0 3px 0 var(--teal-d)}
+.chip.ans{outline:2.5px solid var(--green);outline-offset:1px}
+.row.wrong .chip.on{background:var(--coral);box-shadow:0 3px 0 var(--coral-d)}
+.row.right .chip.on{background:var(--green);box-shadow:0 3px 0 var(--green-d)}
+.chip:disabled{cursor:default}
+.chip.big{font-size:.95rem;padding:12px 14px;min-height:48px;width:100%}
+.slots{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:8px}
+.slot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:2px dashed var(--line);min-height:52px;color:var(--muted)}
+.slot.full{border-style:solid;border-color:var(--teal);color:var(--ink);background:color-mix(in srgb,var(--teal) 8%,var(--card))}
+.slot.right{border-color:var(--green);background:var(--green-bg)}.slot.wrong{border-color:var(--coral);background:var(--coral-bg)}
+.sn{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:var(--line);font-weight:900;color:var(--ink);flex:none}
+.slot .fix{flex-basis:100%}
+.pool{display:flex;flex-direction:column;gap:8px}
+.fix{font-size:.82rem;color:var(--green-d);font-weight:800}
+@media (prefers-color-scheme:dark){.fix{color:var(--green)}}
+.stmt p{margin:8px 0;font-weight:600}
+.flds{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.fld{display:flex;flex-direction:column;gap:5px;font-size:.9rem}
+.fld>span:first-child{color:var(--muted);font-weight:700}
+select,input,textarea{font:inherit;font-size:16px;font-weight:700;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:10px 12px;min-height:48px;width:100%}
+select:focus,input:focus,textarea:focus{border-color:var(--teal);outline:none}
+select:disabled,input:disabled{opacity:1;color:var(--ink)}
+.fld.right input,.fld.right select{border-color:var(--green);background:var(--green-bg)}
+.fld.wrong input,.fld.wrong select{border-color:var(--coral);background:var(--coral-bg)}
+.tw{overflow-x:auto;margin:10px 0;-webkit-overflow-scrolling:touch;border-radius:12px}
+table{border-collapse:collapse;font-size:.86rem;min-width:100%;font-weight:600}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:right;white-space:nowrap}
+thead th{background:color-mix(in srgb,var(--teal) 12%,var(--card));font-weight:800}
+tbody th{text-align:left;font-weight:800;background:color-mix(in srgb,var(--line) 40%,var(--card))}
+table.grid{table-layout:fixed;width:100%;min-width:300px}
+table.grid thead th:first-child,table.grid tbody th{width:46px;padding:4px}
+table.grid th{padding:4px 2px;text-align:center}
+table.grid td{padding:3px}
+table.grid input{min-width:0;padding:6px 3px;font-size:15px;text-align:center;min-height:42px;border-radius:9px}
+table.grid td.right input{border-color:var(--green);background:var(--green-bg)}
+table.grid td.wrong input{border-color:var(--coral);background:var(--coral-bg)}
+table.grid .fix{display:block;text-align:center}
+
+/* ---------- CTA și foaia de feedback ---------- */
+.cta{position:sticky;bottom:0;margin:16px -16px 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.sheet{position:sticky;bottom:0;z-index:5;margin:16px -16px 0;padding:16px 16px calc(14px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0;animation:sheet .32s cubic-bezier(.2,.9,.3,1.2)}
+.sheet:focus{outline:none}
+.sheet.ok{background:var(--green-bg);color:var(--green-d)}
+.sheet.no{background:var(--coral-bg);color:var(--coral-d)}
+.sheet.pt{background:var(--amber-bg);color:var(--amber)}
+@media (prefers-color-scheme:dark){.sheet.ok{color:var(--green)}.sheet.no{color:#FF9A8E}}
+@keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+.sh{display:flex;align-items:center;gap:10px;font-size:1.25rem}
+.si{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:currentColor;flex:none}
+.si{color:inherit}.sheet .si{font-size:1.1rem}
+.sheet.ok .si{background:var(--green);color:#fff}.sheet.no .si{background:var(--coral);color:#fff}.sheet.pt .si{background:var(--yellow);color:#3A2A00}
+.sb{color:var(--ink);font-weight:600;max-height:40vh;overflow:auto;margin:8px 0 12px}
+.sb p{margin:4px 0}
+.sol summary{cursor:pointer;font-weight:900;color:var(--teal-d);padding:6px 0;min-height:40px}
+.sa{display:flex;gap:10px}
+.sa .btn.big{flex:1}
+.sheet.ok .sa .btn.big{background:var(--green);box-shadow:0 4px 0 var(--green-d)}
+.sheet.no .sa .btn.big{background:var(--coral);box-shadow:0 4px 0 var(--coral-d)}
+.sheet.pt .sa .btn.big{background:var(--yellow);color:#3A2A00;box-shadow:0 4px 0 var(--yellow-d)}
+
+/* ---------- intro modul ---------- */
+.mi{text-align:center;padding-bottom:20px}
+.scene{width:100%;max-width:420px;height:auto;display:block;margin:4px auto 6px}
+.scene .box{animation:slide 4s linear infinite}
+@keyframes slide{from{transform:translateX(-30px)}to{transform:translateX(30px)}}
+.mi h1{font-size:clamp(1.6rem,6.6vw,2.2rem);margin:6px 0 10px}
+.mst{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 14px;color:var(--muted);font-weight:800}
+.mst .stz{color:var(--yellow-d);letter-spacing:2px}
+.keyc{text-align:left;background:var(--card);border-radius:var(--r);padding:16px 18px;margin:18px 0;box-shadow:0 4px 0 var(--line);border-top:6px solid var(--c)}
+.keyc h2{font-size:1.1rem;margin-bottom:6px}
+.keyc ul{margin:0;padding-left:20px}
+.keyc li{margin:6px 0;font-weight:600}
+.mact{display:flex;flex-direction:column;gap:12px}
+
+/* ---------- rezultat ---------- */
+.res{text-align:center;padding:30px 0 20px}
+.rstars{display:flex;justify-content:center;gap:6px;margin-bottom:8px}
+.rs{font-size:3.6rem;color:var(--line);line-height:1}
+.rs.on{color:var(--yellow);text-shadow:0 4px 0 var(--yellow-d);animation:pop .5s cubic-bezier(.3,1.6,.5,1) both;animation-delay:var(--d)}
+.rs:nth-child(2){font-size:4.4rem;transform:translateY(-10px)}
+.rs.on:nth-child(2){animation-name:pop2}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}to{transform:none}}
+@keyframes pop2{from{transform:translateY(-10px) scale(0) rotate(-40deg)}to{transform:translateY(-10px)}}
+.rp{font-size:4.2rem;font-weight:900;margin:0;line-height:1.05;color:var(--teal-d)}
+.rm{max-width:30ch;margin:6px auto 18px;font-weight:700}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.rgrid div{background:var(--card);border-radius:16px;padding:12px 6px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column}
+.rgrid b{font-size:1.4rem;color:var(--violet)}
+.rgrid span{font-size:.78rem;color:var(--muted)}
+.rnb{margin-bottom:18px}.rnb h2{font-size:1.1rem;margin-bottom:8px}
+.rnb .bdg{max-width:260px;margin:0 auto 8px}
+.pop{animation:pop .6s cubic-bezier(.3,1.6,.5,1) both .9s}
+
+/* ---------- efecte ---------- */
+.in-right{animation:inR .28s ease-out}.in-left{animation:inL .28s ease-out}.in-up{animation:inU .35s ease-out}
+@keyframes inR{from{opacity:0;transform:translateX(40px)}}@keyframes inL{from{opacity:0;transform:translateX(-40px)}}@keyframes inU{from{opacity:0;transform:translateY(24px)}}
+.pulse{animation:pulse .4s ease}@keyframes pulse{40%{transform:scale(1.025)}}
+.shake{animation:shake .4s ease}@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.toast{position:fixed;left:50%;top:14px;z-index:20;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:16px;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.2);animation:tin .35s cubic-bezier(.2,1.4,.4,1);max-width:90vw;text-align:center}
+.toast.big{background:var(--violet);color:#fff}
+.toast.out{opacity:0;transform:translate(-50%,-20px);transition:.4s}
+@keyframes tin{from{transform:translate(-50%,-40px);opacity:0}}
+.xpf{white-space:nowrap;position:absolute;z-index:21;transform:translateX(-50%);font-weight:900;color:var(--violet);font-size:1.3rem;pointer-events:none;animation:xpf 1.2s ease-out forwards}
+@keyframes xpf{0%{opacity:0;transform:translate(-50%,0)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-60px)}}
+.conf{position:fixed;inset:0;z-index:30;pointer-events:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* ---------- vieți ---------- */
+.lives{display:flex;gap:1px;font-size:1.15rem;line-height:1}
+.hrt{color:var(--coral);display:inline-block}
+.hrt.off{color:var(--line)}
+.hrt.lost{animation:lost .7s ease}
+@keyframes lost{0%{color:var(--coral);transform:scale(1.6)}60%{transform:scale(.6) rotate(-20deg)}100%{transform:none}}
+.lifel{font-weight:900;color:var(--coral-d);margin:0 0 6px}
+@media (prefers-color-scheme:dark){.lifel{color:#FF9A8E}}
+.corr{margin:0 0 6px}
+.rule{margin:18px auto 0;max-width:40ch;font-size:.86rem;color:var(--muted);font-weight:700}
+.rule .hrt{margin-right:2px}
+.ovr{text-align:center;padding:10px 0 20px}
+.ovi{position:relative;width:180px;margin:0 auto}
+.ovi .hall{width:180px;filter:grayscale(1)}
+.warn{position:absolute;right:6px;top:4px;width:40px;height:40px;border-radius:50%;background:var(--coral);color:#fff;font-weight:900;font-size:1.5rem;display:grid;place-items:center;box-shadow:0 4px 0 var(--coral-d);animation:bob 1.4s ease-in-out infinite}
+.ovr h1{font-size:clamp(1.8rem,7vw,2.4rem);margin:6px 0 8px}
+.ovr>p{color:var(--muted);max-width:36ch;margin:0 auto 18px}
+.misl{list-style:none;padding:0;margin:0 0 20px;text-align:left;display:flex;flex-direction:column;gap:14px}
+.mis{background:var(--card);border-radius:20px;padding:16px;box-shadow:0 4px 0 var(--coral)}
+.mis h3{font-size:1.05rem;font-weight:800;margin:10px 0 8px;line-height:1.35}
+.mis p{margin:6px 0;font-weight:600}
+.yr s,.fixl s{color:var(--coral-d);text-decoration-thickness:2px}
+.rr b,.fixl b{color:var(--green-d)}
+@media (prefers-color-scheme:dark){.yr s,.fixl s{color:#FF9A8E}.rr b,.fixl b{color:var(--green)}}
+.fixl{margin:6px 0;padding-left:18px}.fixl li{margin:4px 0}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<noscript>Aplicația are nevoie de JavaScript activat.</noscript>
+<script>/* ===== Generatoare de exerciții numerice (date aleatoare, reproductibile prin seed) ===== */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function mkR(seed){const r=mulberry32(seed);const R={
+  f:r,
+  i:(a,b)=>a+Math.floor(r()*(b-a+1)),
+  pick:a=>a[Math.floor(r()*a.length)],
+  shuffle:a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(r()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a;}
+};return R;}
+const nf=(n,d=0)=>Number(n).toLocaleString("ro-RO",{minimumFractionDigits:d,maximumFractionDigits:d});
+const tbl=(head,rows,cls="")=>`<div class="tw"><table class="${cls}"><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>i===0?`<th scope="row">${c}</th>`:`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+function perms(a){if(a.length<=1)return[a];const out=[];a.forEach((x,i)=>perms(a.slice(0,i).concat(a.slice(i+1))).forEach(p=>out.push([x].concat(p))));return out;}
+function uniq(n,a,b,R){const s=new Set();while(s.size<n)s.add(R.i(a,b));return R.shuffle([...s]);}
+
+const GEN={
+
+/* ---------- MODUL 3: planificare agregat ---------- */
+agregat(seed){
+  let R=mkR(seed),g;
+  for(let tries=0;tries<200;tries++){
+    const W=R.pick([100,150,200,250]), norm=R.pick([2000,4000,5000]), cap=W*norm;
+    let w=[0,0,0,0].map(()=>Math.round(R.i(Math.round(W*0.25),Math.round(W*1.6))/5)*5);
+    const rem=w.reduce((a,b)=>a+b,0)%20; w[3]+= (rem?20-rem:0);
+    const avgW=w.reduce((a,b)=>a+b,0)/4;
+    if(!(w.some(x=>x>W)&&w.some(x=>x<W)&&avgW<W&&avgW>0&&w.every(x=>x>0)))continue;
+    const d=w.map(x=>x*norm);
+    const c={c1:R.pick([4,5,6,8]),c2:R.pick([12,15,18]),c3:R.pick([3000,4000,5000]),c4:R.pick([18,20,25]),c5:R.pick([2000,2500,3000])};
+    // S1 supramuncă și inactivitate
+    const s1=d.map(x=>x<cap?{t:"inactivitate",n:(cap-x)/norm,v:(cap-x)/norm*c.c3}:x>cap?{t:"supramuncă",n:x-cap,v:(x-cap)*c.c2}:{t:"-",n:0,v:0});
+    const S1=s1.reduce((a,b)=>a+b.v,0);
+    // S2 angajări/demiteri
+    let prev=W;const s2=w.map(x=>{const ch=x-prev;prev=x;return{ch,v:Math.abs(ch)*c.c5};});
+    const S2=s2.reduce((a,b)=>a+b.v,0);
+    // S3 producție constantă = cerere medie
+    const P=avgW*norm, idle=W-avgW;let inv=0;
+    const s3=d.map(x=>{inv+=P-x;const st=inv>0?inv*c.c1:0,df=inv<0?-inv*c.c4:0,ia=idle*c.c3;return{inv,st,df,ia,v:st+df+ia};});
+    const S3=s3.reduce((a,b)=>a+b.v,0);
+    const tot=[S1,S2,S3];const mn=Math.min(...tot);if(tot.filter(x=>x===mn).length>1)continue;
+    g={W,norm,cap,w,d,c,s1,S1,s2,S2,P,idle,s3,S3,best:tot.indexOf(mn)};break;
+  }
+  const {W,norm,cap,d,c}=g;
+  return{
+    text:`<p>O firmă are <b>${W} muncitori</b>, fiecare cu o normă trimestrială de <b>${nf(norm)} unități echivalente</b> (capacitate: ${nf(cap)} u/trimestru). Nu există stoc inițial de produse finite.</p>
+    ${tbl(["Trimestrul","I","II","III","IV"],[["Cererea (u)",...d.map(x=>nf(x))]])}
+    ${tbl(["Cost unitar","Valoare"],[["c1 întreținere stoc","%s u.m./u".replace("%s",c.c1)],["c2 supramuncă",c.c2+" u.m./u"],["c3 inactivitate",nf(c.c3)+" u.m./muncitor"],["c4 deficit",c.c4+" u.m./u"],["c5 angajare/concediere",nf(c.c5)+" u.m./persoană"]])}
+    <p>Calculați extracosturile totale pentru cele trei strategii pure. La strategia 3, producția trimestrială este egală cu cererea medie, deficitul se reportează în trimestrul următor (se plătește c4 pentru fiecare unitate restantă la final de trimestru), iar muncitorii neocupați generează cost de inactivitate.</p>`,
+    fields:[
+      {label:"Strategia 1: supramuncă și inactivitate (u.m.)",ans:g.S1},
+      {label:"Strategia 2: urmărirea cererii prin angajări/demiteri (u.m.)",ans:g.S2},
+      {label:"Strategia 3: producție constantă = cererea medie (u.m.)",ans:g.S3},
+      {label:"Strategia cea mai ieftină",type:"select",options:["Strategia 1","Strategia 2","Strategia 3"],ans:g.best}
+    ],
+    sol:`<p><b>Strategia 1.</b> Când cererea e sub capacitate, muncitorii în plus = (capacitate − cerere) / normă, cost c3 pe muncitor. Când e peste, unitățile în plus se fac în supramuncă, cost c2.</p>
+    ${tbl(["Trim.","Situație","Cantitate","Cost"],g.s1.map((s,i)=>[["I","II","III","IV"][i],s.t,s.t==="inactivitate"?s.n+" muncitori":s.t==="supramuncă"?nf(s.n)+" u":"-",nf(s.v)]))}
+    <p>Total: <b>${nf(g.S1)} u.m.</b></p>
+    <p><b>Strategia 2.</b> Necesar muncitori = cerere / normă. Se plătește c5 pentru fiecare persoană angajată sau concediată față de trimestrul anterior (start: ${W}).</p>
+    ${tbl(["Trim.","Muncitori necesari","Variație","Cost"],g.w.map((x,i)=>[["I","II","III","IV"][i],x,(g.s2[i].ch>0?"+":"")+g.s2[i].ch,nf(g.s2[i].v)]))}
+    <p>Total: <b>${nf(g.S2)} u.m.</b></p>
+    <p><b>Strategia 3.</b> Producție = ${nf(g.P)} u/trimestru, deci sunt necesari ${g.P/norm} muncitori; ${g.idle} muncitori rămân inactivi în fiecare trimestru (${nf(g.idle*c.c3)} u.m.).</p>
+    ${tbl(["Trim.","Stoc(+)/deficit(−) cumulat","c1 stoc","c4 deficit","c3 inactiv.","Total"],g.s3.map((s,i)=>[["I","II","III","IV"][i],nf(s.inv),nf(s.st),nf(s.df),nf(s.ia),nf(s.v)]))}
+    <p>Total: <b>${nf(g.S3)} u.m.</b> Cea mai ieftină: <b>strategia ${g.best+1}</b>.</p>`
+  };
+},
+
+/* ---------- MODUL 3: reguli de prioritate SPT ---------- */
+spt(seed){
+  const R=mkR(seed);let t,d,C;
+  for(;;){t=uniq(5,2,9,R);d=t.map(x=>x+R.i(1,18));
+    const ord=[0,1,2,3,4].sort((a,b)=>t[a]-t[b]);let c=0;C=[];ord.forEach(k=>{c+=t[k];C[k]=c;});
+    const late=C.filter((x,k)=>x>d[k]).length;if(late>=1&&late<=3)break;}
+  const ord=[0,1,2,3,4].sort((a,b)=>t[a]-t[b]);
+  const flow=C.reduce((a,b)=>a+b,0)/5, lat=C.reduce((a,x,k)=>a+Math.max(0,x-d[k]),0)/5;
+  const names=["C1","C2","C3","C4","C5"];
+  return{
+    text:`<p>Cinci comenzi așteaptă în fața aceluiași utilaj. Toate sunt disponibile din ziua 0.</p>
+    ${tbl(["Comanda",...names],[["Timp de procesare (zile)",...t],["Termen de livrare (ziua)",...d]])}
+    <p>Aplicați regula <b>„primul în fabricație, produsul cu cel mai mic timp de procesare”</b> (SPT). Calculați timpul mediu petrecut în atelier (media momentelor de terminare) și întârzierea medie, calculată pentru toate cele 5 comenzi (comenzile livrate la timp au întârziere 0).</p>`,
+    fields:[...[1,2,3,4,5].map(p=>({label:`Poziția ${p}`,type:"select",options:names,ans:ord[p-1],short:true})),
+      {label:"Timpul mediu petrecut în atelier (zile)",ans:flow,dec:1},
+      {label:"Întârzierea medie (zile)",ans:lat,dec:1}],
+    sol:`<p>Ordinea crescătoare a timpilor de procesare: <b>${ord.map(k=>names[k]).join(", ")}</b>.</p>
+    ${tbl(["Comanda","Procesare","Terminare","Termen","Întârziere"],ord.map(k=>[names[k],t[k],C[k],d[k],Math.max(0,C[k]-d[k])]))}
+    <p>Timp mediu = ${C.reduce((a,b)=>a+b,0)} / 5 = <b>${nf(flow,1)} zile</b>. Întârziere medie = ${C.reduce((a,x,k)=>a+Math.max(0,x-d[k]),0)} / 5 = <b>${nf(lat,1)} zile</b>.</p>`
+  };
+},
+
+/* ---------- MODUL 3: regula rezervei minime ---------- */
+slack(seed){
+  const R=mkR(seed);let t,d,s;
+  for(;;){t=[0,1,2,3,4].map(()=>R.i(2,10));d=t.map(x=>x+R.i(0,14));s=d.map((x,k)=>x-t[k]);if(new Set(s).size===5)break;}
+  const ord=[0,1,2,3,4].sort((a,b)=>s[a]-s[b]);const names=["L1","L2","L3","L4","L5"];
+  return{
+    text:`<p>Într-o tipografie sosesc cinci lucrări. Data curentă este ziua 0.</p>
+    ${tbl(["Lucrarea",...names],[["Durata de fabricație (zile)",...t],["Termen de livrare (ziua)",...d]])}
+    <p>Stabiliți ordinea de lansare după regula <b>„primul în fabricație, produsul cu cea mai mică rezervă de timp”</b>. Rezerva = termen − data curentă − durata de fabricație.</p>`,
+    fields:[...[1,2,3,4,5].map(p=>({label:`Poziția ${p}`,type:"select",options:names,ans:ord[p-1],short:true})),
+      {label:`Rezerva de timp a lucrării ${names[ord[0]]} (zile)`,ans:s[ord[0]]}],
+    sol:`${tbl(["Lucrarea","Termen","Durată","Rezervă"],names.map((n,k)=>[n,d[k],t[k],s[k]]))}<p>Ordine crescătoare a rezervei: <b>${ord.map(k=>names[k]).join(", ")}</b>. Prima se lansează lucrarea cu rezerva ${s[ord[0]]} zile, pentru că riscă cel mai repede să întârzie.</p>`
+  };
+},
+
+/* ---------- MODUL 3: indice de prioritate Pij(t) ---------- */
+indice(seed){
+  const R=mkR(seed);let Tt,Dcf,P;const Tc=R.i(5,15);
+  for(;;){Tt=[0,1,2,3].map(()=>Tc+R.i(10,35));Dcf=[0,1,2,3].map(()=>R.i(5,30));P=Tt.map((x,k)=>x-Tc-Dcf[k]);if(new Set(P).size===4&&P.some(x=>x<5))break;}
+  const names=["Cmd 1","Cmd 2","Cmd 3","Cmd 4"];const first=P.indexOf(Math.min(...P));
+  return{
+    text:`<p>Pentru patru comenzi aflate la aceeași mașină se calculează indicele de prioritate <b>P(t) = Tt − Tc − Dcf</b> (în zile), unde Tt este termenul de livrare, Tc data curentă, iar Dcf durata ciclului de fabricație rămas. Data curentă: <b>Tc = ziua ${Tc}</b>.</p>
+    ${tbl(["Comanda",...names],[["Tt (ziua)",...Tt],["Dcf (zile)",...Dcf]])}
+    <p>Calculați indicii și precizați comanda care trece prima. Un indice mai mic înseamnă o comandă mai urgentă; un indice negativ arată că termenul nu mai poate fi respectat fără măsuri.</p>`,
+    fields:[...names.map((n,k)=>({label:`P(t) ${n}`,ans:P[k],short:true})),{label:"Comanda care trece prima",type:"select",options:names,ans:first}],
+    sol:`${tbl(["Comanda","Calcul","P(t)"],names.map((n,k)=>[n,`${Tt[k]} − ${Tc} − ${Dcf[k]}`,P[k]]))}<p>Indicele cel mai mic are <b>${names[first]}</b>, deci ea trece prima.</p>`
+  };
+},
+
+/* ---------- MODUL 3: problema de repartizare ---------- */
+repartizare(seed){
+  const R=mkR(seed);let M,best,bestP;
+  for(;;){M=[0,1,2,3].map(()=>[0,1,2,3].map(()=>R.i(3,12)));const all=perms([0,1,2,3]).map(p=>({p,s:p.reduce((a,j,i)=>a+M[i][j],0)}));
+    const mn=Math.min(...all.map(x=>x.s));const opt=all.filter(x=>x.s===mn);if(opt.length===1){best=mn;bestP=opt[0].p;break;}}
+  const ex=["A","B","C","D"],lu=["L1","L2","L3","L4"];
+  return{
+    text:`<p>Patru executanți trebuie să primească fiecare câte o singură lucrare (model de repartizare/afectare). Timpii de execuție, în ore:</p>
+    ${tbl(["Executant",...lu],M.map((r,i)=>[ex[i],...r]))}
+    <p>Formați perechile executant–lucrare astfel încât timpul total să fie minim.</p>`,
+    fields:[...ex.map((e,i)=>({label:`Executantul ${e}`,type:"select",options:lu,ans:bestP[i],short:true})),{label:"Timpul total minim (ore)",ans:best}],
+    sol:`<p>Repartizarea optimă: <b>${ex.map((e,i)=>e+" → "+lu[bestP[i]]).join(", ")}</b>, cu timpul total ${ex.map((e,i)=>M[i][bestP[i]]).join(" + ")} = <b>${best} ore</b>. Pentru 4×4 există 24 de combinații; în practică se folosește metoda ungară sau un ERP.</p>`
+  };
+},
+
+/* ---------- MODUL 4: MRP calculul cererii nete ---------- */
+mrp(seed){
+  const R=mkR(seed);let g;
+  for(;;){
+    const Te=R.pick([1,2]),D0=R.i(4,15)*10,SS=R.pick([0,10,20,30]),rpT=R.i(1,3),rpQ=R.i(5,20)*10;
+    const CB=[0,0,0,0,0,0];R.shuffle([1,2,3,4,5]).slice(0,4).forEach(k=>CB[k]=R.i(5,30)*10);
+    let D=D0;const Dv=[],CN=[];
+    for(let i=0;i<6;i++){Dv.push(D);const RP=i+1===rpT?rpQ:0;const av=D+RP-CB[i];let cn=0;if(av<SS){cn=SS-av;}CN.push(cn);D=av+cn;}
+    if(CN.slice(0,Te).some(x=>x>0))continue;if(CN.filter(x=>x>0).length<2)continue;
+    const LPF=[0,0,0,0,0,0];CN.forEach((x,i)=>{if(x>0)LPF[i-Te]=x;});
+    g={Te,D0,SS,rpT,rpQ,CB,CN,LPF,Dv};break;}
+  const {Te,D0,SS,rpT,rpQ,CB,CN,LPF}=g;const per=[1,2,3,4,5,6];
+  const fields=[];per.forEach((p,i)=>fields.push({label:`CN p${p}`,ans:CN[i],row:0,col:i}));per.forEach((p,i)=>fields.push({label:`LPF p${p}`,ans:LPF[i],row:1,col:i}));
+  return{
+    text:`<p>Produsul P: disponibil inițial <b>D = ${D0}</b> buc, stoc de siguranță <b>SS = ${SS}</b>, timp de execuție <b>Te = ${Te}</b> ${Te===1?"perioadă":"perioade"}, lot pe lot. Recepție programată: <b>${rpQ}</b> buc în perioada ${rpT}.</p>
+    ${tbl(["Perioada",...per],[["Cerere brută CB",...CB.map(x=>x||"–")],["Recepții programate RP",...per.map(p=>p===rpT?rpQ:"–")]])}
+    <p>Folosiți <b>CN = CB − (D − SS) − RP</b> (dacă rezultatul e negativ, CN = 0) și <b>D(i+1) = D(i) + RP(i) − CB(i) + CN(i)</b>. Recepția planificată este egală cu CN, iar lansarea în fabricație (LPF) se face cu Te perioade înainte. Scrieți 0 unde nu există cerere netă sau lansare.</p>`,
+    table:{cols:per.map(p=>"p"+p),rows:["CN","LPF"]},
+    fields,
+    sol:`${tbl(["Perioada",...per],[["CB",...CB],["D la început",...g.Dv],["RP",...per.map(p=>p===rpT?rpQ:0)],["CN",...CN],["LPF",...LPF]])}
+    <p>Exemplu: în prima perioadă cu CN &gt; 0, disponibilul nu mai acoperă cererea brută plus stocul de siguranță, deci se comandă exact diferența. După recepție, disponibilul revine la nivelul SS = ${SS}. Fiecare cantitate se lansează cu ${Te} ${Te===1?"perioadă":"perioade"} mai devreme.</p>`
+  };
+},
+
+/* ---------- MODUL 4: explozia listei de materiale ---------- */
+bom(seed){
+  const R=mkR(seed);
+  const N=R.i(10,50)*10,qb=R.i(1,3),qc=R.i(2,4),qd=R.i(2,5),sA=R.i(0,5)*10,sB=R.i(0,8)*10,sC=R.i(0,10)*10,sD=R.i(0,30)*10;
+  const nA=Math.max(0,N-sA),cbB=qb*nA,nB=Math.max(0,cbB-sB),cbC=qc*nA,nC=Math.max(0,cbC-sC),cbD=qd*nB,nD=Math.max(0,cbD-sD);
+  return{
+    text:`<p>Produsul A are structura: <b>A → B (${qb} buc) + C (${qc} buc)</b>; subansamblul <b>B → D (${qd} buc)</b>. Clientul comandă <b>${N} buc</b> din A.</p>
+    ${tbl(["Articol","A","B","C","D"],[["Nivel","0","1","1","2"],["Stoc disponibil",sA,sB,sC,sD]])}
+    <p>Nu există stoc de siguranță sau recepții programate. Calculați cererea netă pentru fiecare articol. Atenție: cererea brută a unei componente se calculează din cererea netă a părintelui.</p>`,
+    fields:[{label:"CN pentru A",ans:nA},{label:"CN pentru B",ans:nB},{label:"CN pentru C",ans:nC},{label:"CN pentru D",ans:nD}],
+    sol:`${tbl(["Articol","Cerere brută","Stoc","Cerere netă"],[["A",N,sA,nA],["B",`${qb} × ${nA} = ${cbB}`,sB,nB],["C",`${qc} × ${nA} = ${cbC}`,sC,nC],["D",`${qd} × ${nB} = ${cbD}`,sD,nD]])}<p>Aceasta este cererea <b>dependentă</b>: nu se previzionează, ci se calculează exact din structura produsului.</p>`
+  };
+},
+
+/* ---------- MODUL 5: tipul de producție după No ---------- */
+tipprod(seed){
+  const R=mkR(seed);const pool=[[1],[3,4,5],[7,8,9],[11,12,13,14,15,16,17,18,19],[22,25,28,31,36,40]];
+  const ks=R.shuffle([0,1,2,3,4]).slice(0,4);const vals=ks.map(k=>R.pick(pool[k]));
+  const opts=["masă","serie mare","serie mijlocie","serie mică","individuală"];const loc=["Strung CNC 1","Presă 3","Freză 2","Banc montaj 4"];
+  return{
+    text:`<p>S-a determinat numărul de obiecte-operație (No) executate la patru locuri de muncă. Stabiliți tipul de producție pentru fiecare.</p>${tbl(["Loc de muncă","No"],loc.map((l,i)=>[l,vals[i]]))}`,
+    fields:loc.map((l,i)=>({label:l,type:"select",options:opts,ans:ks[i]})),
+    sol:`<p>Pragurile din curs: No = 1 masă; 2–6 serie mare; 6–10 serie mijlocie; 10–20 serie mică; peste 20 individuală.</p>${tbl(["Loc de muncă","No","Tip"],loc.map((l,i)=>[l,vals[i],opts[ks[i]]]))}<p>Cu cât No crește, cu atât locul de muncă este mai puțin specializat și organizarea trebuie să fie mai flexibilă.</p>`
+  };
+},
+
+/* ---------- MODUL 6: EOQ, număr de loturi, periodicitate ---------- */
+eoq(seed){
+  const R=mkR(seed);let D,Co,Ch,L0,nL,Rr,Dcf,rel;
+  for(;;){D=R.i(6,30)*1000;Co=R.i(2,10)*50;Ch=R.i(2,20);L0=Math.round(Math.sqrt(2*D*Co/Ch));nL=D/L0;Rr=250/nL;
+    if(Rr<4||Rr>60)continue;const off=R.pick([-1,1])*R.i(3,8);Dcf=Math.max(2,Math.round(Rr)+off);rel=Rr>Dcf?0:1;break;}
+  return{
+    text:`<p>O piesă standard are cererea anuală <b>D = ${nf(D)} buc</b>, costul lansării unui lot <b>Co = ${Co} lei</b> și costul de stocare <b>Ch = ${Ch} lei/buc/an</b>. Anul are <b>250 zile lucrătoare</b>, iar durata ciclului de fabricație este <b>Dcf = ${Dcf} zile</b>.</p>
+    <p>Calculați lotul optim <b>L₀ = √(2·D·Co / Ch)</b> (rotunjit la bucată), numărul de loturi <b>nL = D / L₀</b> și periodicitatea lansării <b>R = T / nL</b>.</p>`,
+    fields:[{label:"L₀ (buc)",ans:L0,tolAbs:1},{label:"nL (loturi/an, 2 zecimale)",ans:nL,dec:2,tolAbs:0.06},{label:"R (zile, 1 zecimală)",ans:Rr,dec:1,tolAbs:0.2},
+      {label:"Comparând R cu Dcf",type:"select",options:["R > Dcf: între loturi apar intervale fără lot în fabricație","R < Dcf: mai multe loturi se află simultan în fabricație","R = Dcf: lotul următor se lansează exact când se termină precedentul"],ans:rel}],
+    sol:`<p>L₀ = √(2 × ${nf(D)} × ${Co} / ${Ch}) = √${nf(2*D*Co/Ch)} ≈ <b>${nf(L0)} buc</b>.</p><p>nL = ${nf(D)} / ${nf(L0)} ≈ <b>${nf(nL,2)} loturi/an</b>.</p><p>R = 250 / ${nf(nL,2)} ≈ <b>${nf(Rr,1)} zile</b>.</p><p>Cum R ${rel===0?"&gt;":"&lt;"} Dcf (${Dcf} zile), ${rel===0?"locurile de muncă rămân fără lotul respectiv o parte din timp, deci pot fi încărcate cu alte produse.":"loturile se suprapun în fabricație, ceea ce crește stocul de producție neterminată."}</p>`
+  };
+},
+
+/* ---------- MODUL 6: costul a două mărimi de lot ---------- */
+costlot(seed){
+  const R=mkR(seed);const D=R.i(8,24)*1000,Co=R.i(2,8)*50,Ch=R.i(4,15);const L0=Math.sqrt(2*D*Co/Ch);
+  const L1=Math.max(50,Math.round(L0*R.pick([0.3,0.4,0.5])/50)*50),L2=Math.round(L0*R.pick([2.5,3,4])/100)*100;
+  const c=L=>({n:D/L,cl:D/L*Co,sm:L/2,cs:L/2*Ch,t:D/L*Co+L/2*Ch});const a=c(L1),b=c(L2);
+  return{
+    text:`<p>Cerere anuală <b>${nf(D)} buc</b>, cost lansare <b>${Co} lei/lot</b>, cost de stocare <b>${Ch} lei/buc/an</b>. Comparați un lot mic de <b>${nf(L1)} buc</b> cu un lot mare de <b>${nf(L2)} buc</b>.</p><p>Cost total anual = (D / L) × Co + (L / 2) × Ch. Stocul mediu este L / 2.</p>`,
+    fields:[{label:`Cost total pentru lotul de ${nf(L1)} buc (lei)`,ans:a.t,tolRel:0.005},{label:`Cost total pentru lotul de ${nf(L2)} buc (lei)`,ans:b.t,tolRel:0.005},
+      {label:"Ce componentă domină la lotul mic?",type:"select",options:["Costul de lansare","Costul de stocare"],ans:a.cl>a.cs?0:1}],
+    sol:`${tbl(["Indicator",nf(L1)+" buc",nf(L2)+" buc"],[["Nr. loturi/an",nf(a.n,2),nf(b.n,2)],["Cost lansare",nf(a.cl),nf(b.cl)],["Stoc mediu",nf(a.sm),nf(b.sm)],["Cost stocare",nf(a.cs),nf(b.cs)],["Cost total",nf(a.t),nf(b.t)]])}<p>Lotul mic înseamnă lansări dese și reglaje frecvente; lotul mare blochează bani în stoc. Lotul optim (≈ ${nf(Math.round(L0))} buc) echilibrează cele două costuri.</p>`
+  };
+},
+
+/* ---------- MODUL 6: durata ciclului de producție ---------- */
+dcp(seed){
+  const R=mkR(seed);const v={Tpi:R.i(2,8),Tteh:R.i(30,90),Tn:R.pick([0,0,12,24,48]),Tct:R.i(2,10),Ttr:R.i(3,15),Tintr:R.i(10,60)};
+  const S=Object.values(v).reduce((a,b)=>a+b,0);const pct=v.Tteh/S*100;
+  const lab={Tpi:"pregătire-încheiere",Tteh:"tehnologic",Tn:"procese naturale",Tct:"control tehnic",Ttr:"transport",Tintr:"întreruperi"};
+  return{
+    text:`<p>Pentru un lot de piese s-au înregistrat următorii timpi (ore):</p>${tbl(["Componentă","Ore"],Object.keys(v).map(k=>[`${k} (${lab[k]})`,v[k]]))}
+    <p>Calculați durata ciclului de producție <b>Dcp = Tpi + Tteh + Tn + Tct + Ttr + Tîntr</b> și ponderea timpului tehnologic în Dcp.</p>`,
+    fields:[{label:"Dcp (ore)",ans:S},{label:"Ponderea Tteh în Dcp (%, 1 zecimală)",ans:pct,dec:1,tolAbs:0.15},
+      {label:"Cea mai directă cale de reducere a Dcp aici",type:"select",options:["Reducerea întreruperilor interoperații","Creșterea stocului de siguranță","Mărirea lotului de fabricație"],ans:0}],
+    sol:`<p>Dcp = ${Object.values(v).join(" + ")} = <b>${S} ore</b>. Ponderea Tteh = ${v.Tteh} / ${S} × 100 ≈ <b>${nf(pct,1)}%</b>.</p><p>Timpul de întreruperi (${v.Tintr} ore) nu adaugă valoare; reducerea întreruperilor interoperații este una dintre căile de scurtare a ciclului prezentate în curs, alături de scurtarea operațiilor tehnologice, reducerea Tpi și mecanizarea controlului.</p>`
+  };
+},
+
+/* ---------- MODUL 6: periodicitate cu nL întreg ---------- */
+period(seed){
+  const R=mkR(seed);const nL=R.pick([10,12,16,20,25]),L0=R.i(3,12)*100,N=nL*L0,T=R.pick([250,240]);const Rr=T/nL;
+  return{
+    text:`<p>Program anual <b>N = ${nf(N)} buc</b>, lot optim <b>L₀ = ${nf(L0)} buc</b>, fond de timp <b>T = ${T} zile</b>. Calculați numărul de loturi și periodicitatea lansării.</p>`,
+    fields:[{label:"nL (loturi)",ans:nL},{label:"R (zile)",ans:Rr,dec:1,tolAbs:0.05}],
+    sol:`<p>nL = N / L₀ = ${nf(N)} / ${nf(L0)} = <b>${nL}</b>. R = T / nL = ${T} / ${nL} = <b>${nf(Rr,1)} zile</b>: la fiecare ${nf(Rr,1)} zile se lansează un nou lot.</p>`
+  };
+},
+
+/* ---------- MODUL 7: algoritmul Johnson ---------- */
+johnson(seed){
+  const R=mkR(seed);const v=uniq(10,1,14,R);const a=v.slice(0,5),b=v.slice(5);const names=["R1","R2","R3","R4","R5"];
+  let left=[],right=[],rem=[0,1,2,3,4];
+  while(rem.length){let best=null;rem.forEach(k=>{if(!best||a[k]<best.v)best={k,v:a[k],m:1};if(b[k]<best.v)best={k,v:b[k],m:2};});
+    if(best.m===1)left.push(best.k);else right.unshift(best.k);rem=rem.filter(k=>k!==best.k);}
+  const ord=left.concat(right);let t1=0,t2=0;ord.forEach(k=>{t1+=a[k];t2=Math.max(t2,t1)+b[k];});
+  let x1=0,x2=0;const rows=ord.map(k=>{x1+=a[k];const s2=Math.max(x2,x1);x2=s2+b[k];return[names[k],`${x1-a[k]}–${x1}`,`${s2}–${x2}`];});
+  return{
+    text:`<p>Cinci repere trec, în aceeași ordine, prin utilajul U1 și apoi prin U2. Timpii de prelucrare (ore):</p>${tbl(["Utilaj",...names],[["U1",...a],["U2",...b]])}
+    <p>Stabiliți succesiunea optimă cu algoritmul Johnson și durata totală de prelucrare (momentul în care ultimul reper iese de pe U2).</p>`,
+    fields:[...[1,2,3,4,5].map(p=>({label:`Poziția ${p}`,type:"select",options:names,ans:ord[p-1],short:true})),{label:"Durata totală (ore)",ans:t2}],
+    sol:`<p>Se caută minimul din tabel: dacă e pe U1, reperul merge cât mai în față; dacă e pe U2, cât mai în spate. Se elimină reperul și se repetă.</p><p>Succesiune: <b>${ord.map(k=>names[k]).join(", ")}</b>.</p>${tbl(["Reper","U1 (start–sfârșit)","U2 (start–sfârșit)"],rows)}<p>Durata totală: <b>${t2} ore</b>.</p>`
+  };
+},
+
+/* ---------- MODUL 7: regula Next Best cu origine fixă ---------- */
+nb(seed){
+  const R=mkR(seed);const names=["P1","P2","P3","P4"];let M,ord,tot;
+  for(;;){const vals=uniq(12,120,199,R).map(x=>x/100);let k=0;M=names.map((_,i)=>names.map((_,j)=>i===j?null:vals[k++]));
+    ord=[0];tot=0;let cur=0,rem=[1,2,3];while(rem.length){let nx=rem.reduce((b,j)=>M[cur][j]<M[cur][b]?j:b,rem[0]);tot+=M[cur][nx];ord.push(nx);rem=rem.filter(j=>j!==nx);cur=nx;}break;}
+  return{
+    text:`<p>Pe utilajul U1 se execută patru produse. Timpii de reglare (ore) la trecerea de la produsul de pe linie la cel de pe coloană:</p>
+    ${tbl(["Din \\ în",...names],M.map((r,i)=>[names[i],...r.map(x=>x===null?"–":nf(x,2))]))}
+    <p>Aplicați regula <b>NB de bază (cu origine fixă)</b>, începând cu P1: după fiecare produs alegeți următorul cu cel mai mic timp de reglare. Calculați timpul total de reglare.</p>`,
+    fields:[...[2,3,4].map(p=>({label:`Poziția ${p}`,type:"select",options:names,ans:ord[p-1],short:true})),{label:"Timp total de reglare (ore, 2 zecimale)",ans:tot,dec:2,tolAbs:0.006}],
+    sol:`<p>Succesiune: <b>${ord.map(k=>names[k]).join(" → ")}</b>.</p><p>Timp total = ${ord.slice(1).map((k,i)=>nf(M[ord[i]][k],2)).join(" + ")} = <b>${nf(tot,2)} ore</b>.</p><p>NB este euristic: alege la fiecare pas varianta cea mai bună în acel moment, fără garanția optimului global.</p>`
+  };
+},
+
+/* ---------- MODUL 8: grafic Gantt cumulativ ---------- */
+gantt(seed){
+  const R=mkR(seed);const pz=R.i(4,8),n=10;const real=Array.from({length:n},()=>Math.max(0,pz+R.i(-3,1)));
+  let cp=0,cr=0;const CP=[],CR=[];for(let i=0;i<n;i++){cp+=pz;cr+=real[i];CP.push(cp);CR.push(cr);}
+  const ab=cr-cp,gi=cr/cp*100;const days=[...Array(n).keys()].map(x=>x+1);
+  return{
+    text:`<p>Programul unei secții prevede <b>${pz} buc/zi</b> pe 10 zile. Realizările zilnice au fost:</p>${tbl(["Ziua",...days],[["Realizat (buc)",...real]],"small")}
+    <p>Completați graficul Gantt tabelar cumulativ pentru ziua 10 și interpretați abaterea.</p>`,
+    fields:[{label:"Programat cumulat la ziua 10",ans:cp},{label:"Realizat cumulat la ziua 10",ans:cr},{label:"Abaterea (realizat − programat)",ans:ab},{label:"Grad de îndeplinire (%, 1 zecimală)",ans:gi,dec:1,tolAbs:0.15}],
+    sol:`${tbl(["Ziua",...days],[["P cumulat",...CP],["R cumulat",...CR]],"small")}<p>Abatere = ${cr} − ${cp} = <b>${ab}</b> buc; grad de îndeplinire = ${cr} / ${cp} × 100 ≈ <b>${nf(gi,1)}%</b>. Graficul cumulativ arată tendința: dacă diferența crește zi de zi, problema nu e accidentală și cere măsuri corective, nu doar consemnare în caietul dispecerului.</p>`
+  };
+},
+
+/* ---------- MODUL 9: priorități Pr = Tf − D devansare ---------- */
+prioritati(seed){
+  const R=mkR(seed);const Tf=R.i(40,70);let dv;for(;;){dv=uniq(4,5,35,R);break;}const P=dv.map(x=>Tf-x);const names=["R1","R2","R3","R4"];const first=P.indexOf(Math.min(...P));
+  return{
+    text:`<p>Produsul are termenul final de fabricație <b>Tf = ziua ${Tf}</b>. Pentru patru repere s-au calculat duratele devansării (zile):</p>${tbl(["Reper",...names],[["D devansare",...dv]])}
+    <p>Calculați prioritatea <b>Pr = Tf − D devansare</b> (ziua la care reperul trebuie lansat) și stabiliți reperul care se lansează primul.</p>`,
+    fields:[...names.map((n,k)=>({label:`Pr ${n}`,ans:P[k],short:true})),{label:"Reperul lansat primul",type:"select",options:names,ans:first}],
+    sol:`${tbl(["Reper","Calcul","Pr"],names.map((n,k)=>[n,`${Tf} − ${dv[k]}`,P[k]]))}<p>Reperul cu devansarea cea mai mare are prioritatea cea mai mică ca valoare, deci se lansează primul: <b>${names[first]}</b>.</p>`
+  };
+},
+
+/* ---------- MODUL 10: indicatori de eficiență ---------- */
+indicatori(seed){
+  const R=mkR(seed);const Qp=R.i(80,200)*100,Qr=Math.round(Qp*R.i(85,108)/100),Cp=Math.round(Qp*R.i(105,130)/100/100)*100,Td=R.pick([1760,1840,1920]),Tl=Math.round(Td*R.i(72,96)/100);
+  const k1=Qr/Qp*100,k2=Qr/Cp*100,k3=Tl/Td*100;
+  return{
+    text:`<p>O secție a programat <b>${nf(Qp)} buc</b> și a realizat <b>${nf(Qr)} buc</b>. Capacitatea de producție este <b>${nf(Cp)} buc</b>. Un utilaj a avut un fond de timp disponibil programat de <b>${nf(Td)} ore</b> și a lucrat efectiv <b>${nf(Tl)} ore</b>.</p><p>Calculați, ca raport realizat/bază × 100:</p>`,
+    fields:[{label:"Coeficientul îndeplinirii programului (%)",ans:k1,dec:1,tolAbs:0.15},{label:"Indicatorul folosirii capacității (%)",ans:k2,dec:1,tolAbs:0.15},{label:"Folosirea fondului de timp disponibil (%)",ans:k3,dec:1,tolAbs:0.15}],
+    sol:`<p>Îndeplinirea programului = ${nf(Qr)} / ${nf(Qp)} × 100 ≈ <b>${nf(k1,1)}%</b>.</p><p>Folosirea capacității = ${nf(Qr)} / ${nf(Cp)} × 100 ≈ <b>${nf(k2,1)}%</b>.</p><p>Folosirea fondului de timp = ${nf(Tl)} / ${nf(Td)} × 100 ≈ <b>${nf(k3,1)}%</b>.</p><p>Un program îndeplinit peste 100% nu e automat un succes: poate însemna stocuri inutile sau un program subdimensionat.</p>`
+  };
+},
+
+/* ---------- MODUL 10: coeficientul de ritmicitate ---------- */
+ritm(seed){
+  const R=mkR(seed);const qp=[0,1,2].map(()=>R.i(20,40)*10);const qr=qp.map(x=>Math.max(0,x+R.i(-8,6)*10));
+  const sp=qp.reduce((a,b)=>a+b,0),sm=qp.reduce((a,x,i)=>a+Math.min(x,qr[i]),0),sr=qr.reduce((a,b)=>a+b,0);const kr=sm/sp*100,ki=sr/sp*100;
+  return{
+    text:`<p>Programul lunar al unei linii este împărțit pe decade:</p>${tbl(["Decada","I","II","III"],[["Programat",...qp],["Realizat",...qr]])}
+    <p>Calculați coeficientul de ritmicitate <b>Kr = Σ min(Realizat, Programat) / Σ Programat × 100</b> (producția peste program dintr-o decadă nu compensează lipsa din alta) și coeficientul de îndeplinire a programului lunar.</p>`,
+    fields:[{label:"Kr (%, 1 zecimală)",ans:kr,dec:1,tolAbs:0.15},{label:"Îndeplinirea programului lunar (%, 1 zecimală)",ans:ki,dec:1,tolAbs:0.15}],
+    sol:`<p>Σ min = ${qp.map((x,i)=>Math.min(x,qr[i])).join(" + ")} = ${sm}; Σ programat = ${sp}. Kr = ${sm} / ${sp} × 100 ≈ <b>${nf(kr,1)}%</b>.</p><p>Îndeplinire = ${sr} / ${sp} × 100 ≈ <b>${nf(ki,1)}%</b>.</p><p>${ki>kr?"Programul pe lună arată mai bine decât ritmicitatea: s-a lucrat în salturi, nu uniform.":"Cele două valori sunt apropiate: producția a urmat programul pe decade."}</p>`
+  };
+}
+};
+if(typeof module!=="undefined")module.exports={GEN,mkR};
+
+/* ===== Conținutul modulelor. Tipuri: mcq, classify, order, calc ===== */
+const MODULES=[
+/* ================= 1 ================= */
+{id:"m1",nr:1,title:"Conceptul de management operațional",src:"Curs 2, Cap. 1",
+key:["Managementul operațional (MO) stabilește și atinge obiective derivate prin cele cinci funcții: programare, organizare, coordonare, antrenare, control.",
+"Fabricația este susținută de programare (programare propriu-zisă, lansare, control), pregătire și urmărire.",
+"Controlul asigură reprogramarea continuă: se lucrează cu abateri (∆) față de standarde.",
+"Turbulența mediului impune flexibilitate; MO devine „extrovertit”, sensibil la mediu.",
+"Obiectivul principal este ritmicitatea fabricației; obiectivul corolar: costuri mai mici și calitate asigurată."],
+items:[
+{id:"q1",type:"mcq",q:"Conform definiției din curs, ce fel de obiective stabilește și urmărește managementul operațional?",opts:["Obiective derivate","Obiective fundamentale ale organizației","Exclusiv obiective financiare","Obiective strategice pe termen lung"],a:0,ex:"MO este procesul de stabilire conștientă și de atingere a obiectivelor derivate, cu ajutorul celor 5 funcții, în domeniul procesării bunurilor și serviciilor."},
+{id:"q2",type:"mcq",q:"Care dintre următoarele NU este una dintre cele cinci funcții ale managementului operațional?",opts:["Negocierea","Antrenarea","Coordonarea","Programarea"],a:0,ex:"Funcțiile MO sunt: programarea, organizarea, coordonarea, antrenarea și controlul."},
+{id:"q3",type:"mcq",q:"De ce spunem că în MO vorbim despre „reprogramare” și nu doar despre „programare”?",opts:["Pentru că controlul stabilește abateri față de standarde și declanșează ajustarea continuă a programului","Pentru că programul se refă obligatoriu la începutul fiecărui an","Pentru că programarea se face o singură dată, la înființarea firmei","Pentru că lansarea în fabricație înlocuiește programarea"],a:0,ex:"Controlul asigură reprogramarea continuă, ca urmare a stabilirii abaterilor (∆) față de standardele inițiale."},
+{id:"q4",type:"mcq",q:"Pe măsură ce turbulența mediului crește, managementul operațional se caracterizează printr-un proces de:",opts:["extrovertire, adică sensibilitate puternică la mediu","introvertire, concentrare pe procesele interne","centralizare totală a deciziilor","standardizare rigidă a produselor"],a:0,ex:"Turbulența mediului impune flexibilitatea; MO devine extrovertit, cu „antenele ridicate” spre schimbările externe."},
+{id:"q5",type:"mcq",q:"Realizarea obiectivului fundamental presupune îndeplinirea celui principal, respectiv:",opts:["asigurarea ritmicității fabricației","maximizarea numărului de angajați","creșterea stocurilor de siguranță","reducerea numărului de produse"],a:0,ex:"Obiectivul principal este ritmicitatea fabricației: egalitate între timpul de muncă necesar și cel disponibil, pe intervale scurte, astfel încât procesul să poată fi considerat continuu."},
+{id:"q6",type:"mcq",q:"Care este obiectivul corolar al managementului operațional?",opts:["Reducerea cheltuielilor și asigurarea calității produselor","Creșterea cifrei de afaceri cu orice cost","Eliminarea completă a stocurilor","Automatizarea tuturor locurilor de muncă"],a:0,ex:"Obiectivul corolar: reducerea cheltuielilor și, în același timp, asigurarea calității produselor."},
+{id:"q7",type:"mcq",q:"Utilizarea maximă a bazei de materii prime se asigură, în principal, prin:",opts:["subsistemul de lansare în fabricație","subsistemul de recrutare","creșterea numărului de schimburi","departamentul de marketing"],a:0,ex:"Curs, slide 21: utilizarea maximă a bazei de materii prime se asigură prin subsistemul de lansare în fabricație."},
+{id:"q8",type:"mcq",q:"Ce nivel al managementului traduce obiectivele strategice în planuri detaliate, pe termen mediu?",opts:["Managementul tactic","Managementul strategic","Managementul operativ","Managementul financiar"],a:0,ex:"Strategic = direcția de ansamblu; tactic = planuri pe termen mediu; operativ = implementarea zilnică."},
+{id:"q9",type:"mcq",q:"Ce cuprinde etapa de programare din activitățile de procesare?",opts:["Programarea propriu-zisă, lansarea și controlul","Doar elaborarea bugetului anual","Recrutarea și instruirea personalului","Proiectarea produsului și testarea pieței"],a:0,ex:"Fabricația este susținută de programare (programare propriu-zisă, lansare, control), pregătire și urmărire."},
+{id:"q10",type:"mcq",q:"Previziunea, ca responsabilitate a managerului operațional, înseamnă:",opts:["predicția cererii pentru produsele firmei pe baza informațiilor din trecut","stabilirea prețurilor de vânzare","negocierea cu sindicatele","alegerea furnizorilor de utilaje"],a:0,ex:"Previziunea = predicții ale evenimentelor viitoare pe baza informațiilor din trecut; managerul prezice cererea clienților."},
+{id:"c1",type:"mcq",case:true,ctx:"La o fabrică de mobilă, furnizorul de PAL anunță o întârziere de trei zile. Comenzile programate pentru această săptămână folosesc toate PAL, cu excepția a două comenzi de mese din lemn masiv.",q:"Care este reacția corectă a managerului operațional?",opts:["Reprogramează: avansează comenzile din lemn masiv și mută comenzile cu PAL după sosirea materialului","Oprește fabrica până sosește PAL-ul, pentru a respecta programul inițial","Lasă programul neschimbat și înregistrează întârzierea la final de lună","Anulează comenzile care folosesc PAL"],a:0,ex:"Urmărirea și controlul identifică abaterea, iar MO răspunde prin reprogramare, astfel încât capacitățile să nu stea nefolosite."},
+{id:"c2",type:"mcq",case:true,ctx:"Într-un atelier, cel mai experimentat tâmplar a fost mutat la ambalarea cutiilor, iar doi angajați noi lucrează la piesele sculptate.",q:"Ce direcție de folosire rațională a resurselor este încălcată?",opts:["Folosirea superioară a forței de muncă","Folosirea eficientă a capacităților de producție","Utilizarea maximă a bazei de materii prime","Dimensionarea riguroasă a stocurilor"],a:0,ex:"Folosirea superioară a forței de muncă = afectarea sarcinilor la executanți cu calificarea corespunzătoare, pentru productivitate maximă."},
+{id:"k1",type:"classify",q:"O fabrică de lactate. Clasificați fiecare element ca variabilă a MO.",cats:["Variabilă de intrare","Variabilă de ieșire","Variabilă perturbatoare"],rows:[["Laptele crud de la ferme",0],["Iaurtul ambalat livrat la magazin",1],["Defectarea liniei de îmbuteliere",2],["Operatorii din schimbul de noapte",0],["Greva transportatorilor",2],["Brânza maturată gata de vânzare",1]],ex:"Intrări: resursele (materii prime, muncă). Ieșiri: produsele. Perturbatoare: evenimente care deviază procesul de la program."},
+{id:"k2",type:"classify",q:"Clasificați obiectivele managementului operațional.",cats:["Fundamental","Principal","Derivat"],rows:[["Supraviețuirea și profitabilitatea firmei",0],["Ritmicitatea producției",1],["Reducerea costurilor",2],["Satisfacția clienților",2],["Calitatea producției",1]],ex:"Curs 2, S19: fundamentale (supraviețuire, profitabilitate), principale (ritmicitate, calitate), derivate (reducerea costurilor, satisfacția clienților)."},
+{id:"o1",type:"order",q:"Ordonați nivelurile managementului de la direcția de ansamblu spre execuția zilnică.",steps:["Management strategic","Management tactic","Management operativ"],ex:"Strategicul fixează direcția, tacticul o traduce în planuri pe termen mediu, operativul o implementează zilnic."}
+]},
+/* ================= 2 ================= */
+{id:"m2",nr:2,title:"Strategia operațională de producție",src:"Curs 3, Cap. 2",
+key:["Strategia de business spune unde vrem să ajungem; strategia operațională spune cum producem ca să ajungem acolo.",
+"Elemente centrale: misiunea, competența distinctivă, obiectivele operaționale, politicile operaționale.",
+"Formularea pornește de la analiza mediului extern și intern; procesul este circular, cu feedback din rezultate.",
+"Două tipuri: strategia celui care imită (piețe mature, cost) și strategia inovatorului (piețe în dezvoltare, flexibilitate).",
+"O firmă trebuie să aleagă o competență principală; McDonald’s 2013–2015 arată ce se întâmplă când încerci să fii bun la toate."],
+items:[
+{id:"q1",type:"mcq",q:"Care este diferența dintre strategia de business și strategia operațională?",opts:["Prima stabilește unde vrem să ajungem, a doua cum producem pentru a ajunge acolo","Prima este pe termen scurt, a doua pe termen lung","Prima privește doar producția, a doua doar vânzările","Nu există diferență, sunt sinonime"],a:0,ex:"Strategia operațională continuă strategia organizației în cadrul funcțiunii de producție."},
+{id:"q2",type:"mcq",q:"Competența distinctivă reprezintă:",opts:["domeniul în care firma poate excela în funcțiunea de producție","lista tuturor produselor firmei","nivelul de calificare al managerului general","bugetul alocat cercetării"],a:0,ex:"Competența distinctivă = „ce poți face excelent” în funcțiunea de producție: cost, calitate, flexibilitate sau livrare."},
+{id:"q3",type:"mcq",q:"Politicile operaționale arată:",opts:["cum vor fi îndeplinite obiectivele, prin decizii și reguli concrete","ce își dorește organizația pe termen lung","care sunt concurenții principali","ce venituri estimează firma"],a:0,ex:"Politicile definesc cum se face efectiv treaba: tehnologii, gestiunea stocurilor, planificare, standarde."},
+{id:"q4",type:"mcq",q:"Strategia celui care imită este specifică:",opts:["piețelor mature, sensibile la preț, cu produse standardizate","piețelor în dezvoltare, cu cerere instabilă","firmelor care lansează des produse radical noi","exclusiv sectorului public"],a:0,ex:"Misiunea se concentrează pe costuri: procese simplificate, standardizate, integrare verticală (ex. IKEA, Zara)."},
+{id:"q5",type:"mcq",q:"Strategia inovatorului pune accent în primul rând pe:",opts:["flexibilitate și lansarea rapidă de produse noi","reducerea costului unitar cu orice preț","menținerea aceluiași produs cât mai mult","eliminarea cercetării-dezvoltării"],a:0,ex:"Pentru piețe în dezvoltare, adaptabilitatea contează mai mult decât costul (ex. Tesla, Apple)."},
+{id:"q6",type:"mcq",q:"Potrivit cursului, de ce este adesea producția necompetitivă?",opts:["Pentru că este concentrată pe factorii interni și nu se adaptează la o lume în schimbare","Pentru că folosește prea multă tehnologie","Pentru că are prea mulți clienți","Pentru că obiectivele sunt măsurabile"],a:0,ex:"Slide 7: în multe cazuri producția este concentrată pe factori interni, de aceea este necompetitivă (exemplul Kodak)."},
+{id:"q7",type:"mcq",q:"Ce înseamnă „nearshoring”?",opts:["Mutarea producției mai aproape de piețele de desfacere","Externalizarea producției în Asia","Producția exclusiv pe comandă","Închiderea fabricilor din zonele de coastă"],a:0,ex:"După crizele recente, firme ca IKEA, Inditex sau Volkswagen au mutat o parte din producție în Europa de Est, pentru reziliență și livrare rapidă."},
+{id:"q8",type:"mcq",q:"Un „digital twin” permite:",opts:["testarea scenariilor într-o replică virtuală a fabricii înainte de aplicarea lor în realitate","dublarea automată a capacității de producție","angajarea a doi operatori pe același post","stocarea produselor într-un depozit virtual"],a:0,ex:"Gemenii digitali (Siemens, GE) mută managementul de la reactiv la predictiv."},
+{id:"q9",type:"mcq",q:"Care este lecția cazului McDonald’s (2013–2015) din curs?",opts:["O firmă trebuie să aibă o competență principală clar definită","Meniurile mari cresc mereu profitul","Cafeaua de specialitate este cheia fast-food-ului","Standardizarea globală nu funcționează"],a:0,ex:"Încercând să fie simultan ieftin, sănătos și premium, brandul a devenit confuz; revenirea la viteză și produse iconice a rezolvat problema."},
+{id:"c1",type:"mcq",case:true,ctx:"O brutărie artizanală din Ploiești vrea, în același timp, cele mai mici prețuri din oraș, produse premium cu maia naturală și livrare în 30 de minute oriunde în județ.",q:"Ce recomandare decurge din curs?",opts:["Să aleagă o competență distinctivă și să-și construiască procesele în jurul ei","Să urmărească toate trei obiectivele cu aceeași prioritate","Să renunțe la orice strategie și să reacționeze la cerere","Să copieze strategia celui mai mare concurent"],a:0,ex:"O companie nu poate fi simultan cea mai ieftină, cea mai bună și cea mai rapidă; strategia stabilește ordinea priorităților competitive."},
+{id:"c2",type:"mcq",case:true,ctx:"Un producător de piese auto din Pitești a rămas fără cipuri timp de două luni, pentru că avea un singur furnizor din Asia.",q:"Ce factor extern a fost neglijat în strategia operațională?",opts:["Materiile prime: disponibilitatea și dependența de surse externe","Nevoile consumatorilor","Cultura organizațională","Abilitățile forței de muncă"],a:0,ex:"Strategia trebuie să analizeze dependențele externe și, pe cât posibil, să diversifice sursele de aprovizionare. Cultura și abilitățile țin de mediul intern."},
+{id:"k1",type:"classify",q:"Ce avantaj competitiv principal ilustrează fiecare companie, conform cursului?",cats:["Cost","Calitate","Livrare","Flexibilitate","Inovație"],rows:[["IKEA",0],["Toyota",1],["Amazon",2],["Zara",3],["Apple",4],["Ryanair",0],["Rolex",1]],ex:"Curs 3, S8: IKEA și Ryanair (cost), Toyota și Rolex (calitate), Amazon (livrare), Zara (flexibilitate), Apple (inovație)."},
+{id:"k2",type:"classify",q:"Încadrați fiecare factor în analiza mediului.",cats:["Mediu extern","Mediu intern"],rows:[["Concurența",0],["Cultura organizațională",1],["Inflația",0],["Abilitățile forței de muncă",1],["Disponibilitatea resurselor",1],["Fluctuația cursului valutar",0],["Noile tehnologii",0]],ex:"Slide 5: extern = concurență, clienți, economic, tehnologii, condiții sociale; intern = resurse, cultură, abilitățile forței de muncă."},
+{id:"k3",type:"classify",q:"O fabrică de mobilier. Ce element al strategiei operaționale reprezintă fiecare enunț?",cats:["Misiune","Competență distinctivă","Obiectiv operațional","Politică operațională"],rows:[["„Oferim mobilier funcțional la cel mai bun preț de pe piață.”",0],["„Ne reconfigurăm liniile mai repede decât orice concurent.”",1],["„Reducem rebuturile cu 15% până în decembrie.”",2],["„Gestionăm stocurile de componente prin Kanban.”",3]],ex:"Misiunea = rolul funcției de producție; competența = ce faci excelent; obiectivul = țintă măsurabilă; politica = regula concretă de implementare."},
+{id:"o1",type:"order",q:"Ordonați pașii metodei de formulare a strategiei operaționale.",steps:["Misiunea funcțiunii de producție","Competența distinctivă","Obiectivele operaționale","Politicile operaționale"],ex:"Slide 5: misiune → competență distinctivă → obiective → politici, urmate de decizii tehnice și rezultate, cu feedback."}
+]},
+/* ================= 3 ================= */
+{id:"m3",nr:3,title:"Programarea: planificarea agregat și ordonanțarea",src:"Curs 5, Cap. 3.1",
+key:["Previziunea are trei etape: prognoză, planificare, programare.",
+"Planul agregat (3–18 luni) pune în balanță capacitatea și cererea, la cost minim.",
+"Strategii pure: urmărirea cererii (supramuncă/inactivitate sau angajări/demiteri) și producție constantă egală cu cererea medie.",
+"Programul calendaristic centralizator (MPS) detaliază planul pe produse, cantități, priorități, termene și valoare.",
+"Ordonanțarea folosește reguli de prioritate, mărimi numerice de prioritate, algoritmi optimi și euristici."],
+items:[
+{id:"q1",type:"mcq",q:"Care este ordinea etapelor previziunii, după orizontul de timp?",opts:["Prognoză, planificare, programare","Programare, planificare, prognoză","Planificare, prognoză, programare","Prognoză, programare, planificare"],a:0,ex:"Slide 3: prognoză → planificare → programare, de la termen lung la termen scurt."},
+{id:"q2",type:"mcq",q:"Ce orizont acoperă planificarea agregat?",opts:["Între 3 și 18 luni","Între 1 și 8 săptămâni","O singură zi de lucru","Între 5 și 10 ani"],a:0,ex:"Planificarea agregat se realizează pe perioade intermediare, de 3 până la 18 luni."},
+{id:"q3",type:"mcq",q:"Ce urmărește planificarea agregat?",opts:["Să pună în balanță capacitatea de producție și cererea, astfel încât costurile să fie minime","Să stabilească ordinea operațiilor pe fiecare utilaj","Să calculeze necesarul de șuruburi","Să fixeze salariile angajaților"],a:0,ex:"Planul agregat conține cererea, producția teoretică, stocurile și termenele globale de livrare."},
+{id:"q4",type:"mcq",q:"În strategia de urmărire a cererii, producția programată este:",opts:["egală cu cererea estimată din fiecare perioadă","egală cu cererea medie pe an","egală cu capacitatea maximă","zero în perioadele cu cerere mică"],a:0,ex:"Se urmărește cererea fie prin supramuncă și inactivitate, fie prin angajări și demiteri."},
+{id:"q5",type:"mcq",q:"De ce este planificarea agregat mai delicată în servicii?",opts:["Serviciile nu pot fi stocate și sunt perisabile","Serviciile nu au cerere sezonieră","Serviciile nu au costuri de personal","Serviciile nu pot fi planificate"],a:0,ex:"O cameră de hotel neocupată într-o noapte nu se poate „recupera” ulterior."},
+{id:"q6",type:"mcq",q:"Cum sunt folosite de obicei pârghiile când cererea crește semnificativ?",opts:["Mai întâi supramunca, apoi reducerea stocurilor și angajarea de lucrători","Mai întâi concedieri, apoi supramuncă","Doar subcontractare","Creșterea prețurilor pentru a reduce cererea"],a:0,ex:"Slide 19: supramunca (8 ore în plus/săptămână, perioade de 12 săptămâni), apoi reducerea stocurilor și angajări."},
+{id:"q7",type:"mcq",q:"Modelul problemei de repartizare (afectare) presupune:",opts:["formarea de perechi executant–lucrare, fiecare lucrare unui singur executant","împărțirea unei sarcini între mai mulți executanți","alocarea materiilor prime pe depozite","stabilirea prețului fiecărei lucrări"],a:0,ex:"Spre deosebire de modelul de distribuire (transport), unde o sarcină poate folosi o combinație de executanți."},
+{id:"q8",type:"mcq",q:"Dacă obiectivul principal este respectarea termenelor, ce regulă locală de prioritate recomandă cursul?",opts:["Produsul cu cea mai mică rezervă de timp","Primul sosit, primul servit","Oricare produs","Produsul cu cea mai mare valoare"],a:0,ex:"FCFS → satisfacția clientului; rezerva minimă → termene; SPT → reducerea timpilor morți și productivitate."},
+{id:"q9",type:"mcq",q:"Aplicarea multiplicativă a regulilor de prioritate înseamnă:",opts:["respectarea concomitentă a două reguli, de exemplu importanța clientului și rezerva de timp","aplicarea unei a doua reguli doar la egalitate după prima","aplicarea unei singure reguli simple","dublarea priorității tuturor comenzilor"],a:0,ex:"Aditiv = a doua regulă intervine la egalitate; multiplicativ = cele două reguli acționează simultan."},
+{id:"q10",type:"mcq",q:"Când sunt preferați algoritmii euristici în locul celor optimi?",opts:["Când problema e prea complexă pentru soluția exactă și e nevoie de un rezultat bun, rapid","Când avem doar două lucrări","Când costul calculului nu contează","Niciodată, algoritmii optimi sunt mereu mai buni"],a:0,ex:"Algoritmii optimi se potrivesc pentru puține activități; în producția de volum mare devin prea greoi."},
+{id:"q11",type:"mcq",q:"Programul calendaristic centralizator (MPS) NU conține, pentru fiecare perioadă:",opts:["fișele de post ale muncitorilor","cantitățile programate din fiecare produs","termenele de livrare","valoarea producției marfă programate"],a:0,ex:"MPS cuprinde: denumirea produselor, cantitățile, prioritățile, termenele de livrare și valoarea producției marfă."},
+{id:"k1",type:"classify",q:"Clasificați opțiunile de echilibrare a cererii cu capacitatea.",cats:["Influențează cererea","Ajustează capacitatea"],rows:[["Prețuri reduse la matineu",0],["Ore suplimentare",1],["Amânarea livrării comenzilor",0],["Muncă sezonieră",1],["Barul pentru clienții care așteaptă masa",0],["Subcontractarea comenzilor",1],["Stocuri create în perioade slabe",1],["Campanie de promovare",0]],ex:"Slide 20: cererea se influențează prin preț, promovare, amânare, cerere complementară; capacitatea prin angajări, ore suplimentare, normă redusă, stocuri, subcontractare."},
+{id:"o1",type:"order",q:"Ordonați etapele planificării, de la termen lung la termen scurt.",steps:["Planificarea strategică","Planificarea agregat","Planificarea master a producției","Planificarea necesarului de materiale (MRP)","Programarea detaliată"],ex:"Slide 3–4: familii de produse → grupe → produse → subansamble și repere."},
+{id:"g1",type:"calc",gen:"agregat",title:"Planificare agregat: trei strategii pure"},
+{id:"g2",type:"calc",gen:"spt",title:"Regula SPT"},
+{id:"g3",type:"calc",gen:"slack",title:"Regula rezervei minime de timp"},
+{id:"g4",type:"calc",gen:"indice",title:"Indicele de prioritate al comenzilor"},
+{id:"g5",type:"calc",gen:"repartizare",title:"Problema de repartizare"}
+]},
+/* ================= 4 ================= */
+{id:"m4",nr:4,title:"Metoda MRP",src:"Curs 9, MRP, Cap. 3.1",
+key:["MRP răspunde la trei întrebări: de ce este nevoie, cât și când.",
+"Cererea independentă (produse finite) se previzionează; cererea dependentă (componente) se calculează exact.",
+"Intrări: programul master de producție (PMP, 40–50 săptămâni), lista de repere (BOM), înregistrările de inventar.",
+"CN = CB − (D − SS) − RP; D(i+1) = D(i) + RP(i) − CB(i) + CN(i); lansarea se face cu Te perioade înainte de recepție.",
+"Evoluție: MRP → MRP I → MRP II → ERP. MRP clasic nu include programarea capacității."],
+items:[
+{id:"q1",type:"mcq",q:"La ce trei întrebări răspunde MRP?",opts:["De ce este nevoie? Cât? Când?","Cine produce? Unde? Cu ce cost?","Ce vindem? Cui? La ce preț?","Cât costă? Cine plătește? Când?"],a:0,ex:"MRP calculează materialele și componentele, cantitățile exacte și momentul potrivit."},
+{id:"q2",type:"mcq",q:"Ce limită avea sistemul MRP clasic?",opts:["Nu includea programarea capacității","Nu calcula cantitățile de piese","Nu folosea programul master","Nu putea fi informatizat"],a:0,ex:"MRP = sistem de control al inventarului; MRP I adaugă controlul producției și capacităților."},
+{id:"q3",type:"mcq",q:"Din ce s-a născut conceptul MRP II?",opts:["Din evidențierea celor două tipuri de nevoi: independente și dependente","Din apariția internetului","Din renunțarea la listele de materiale","Din cerințele contabilității"],a:0,ex:"Slide 34 / MRP 4: MRP II a pornit de la distincția dintre cererea independentă și cea dependentă."},
+{id:"q4",type:"mcq",q:"Programul master de producție (PMP) provine din:",opts:["descompunerea planului agregat în produse concrete, pe 40–50 de săptămâni","lista furnizorilor","bugetul de marketing","registrul de personal"],a:0,ex:"De PMP depind programarea componentelor, a personalului, a echipamentelor și achizițiile."},
+{id:"q5",type:"mcq",q:"Lista de repere (BOM) conține:",opts:["reperele și subansamblele, cantitățile din fiecare și secvența în care se combină","prețurile de vânzare ale produselor","programul de lucru al muncitorilor","clienții care au comandat produsul"],a:0,ex:"BOM are structură ierarhică pe niveluri: produs (nivel 0) → subansamble → componente."},
+{id:"q6",type:"mcq",q:"Care este formula cererii nete din curs?",opts:["CN = CB − (D − SS) − RP","CN = CB + D + SS + RP","CN = D − CB","CN = (CB − RP) × SS"],a:0,ex:"CB = cerere brută, D = disponibil, SS = stoc de siguranță, RP = recepții programate."},
+{id:"q7",type:"mcq",q:"Lansarea programată în fabricație (LPF) se plasează:",opts:["cu Te perioade înaintea recepției planificate","în aceeași perioadă cu recepția","după recepția planificată","la începutul anului, indiferent de Te"],a:0,ex:"Te = timpul de execuție; dacă Te = 2 și recepția e în perioada 5, lansarea e în perioada 3."},
+{id:"q8",type:"mcq",q:"Care este un dezavantaj al MRP menționat în curs?",opts:["Costuri mari: hardware, software, pregătirea datelor, echipa de implementare","Creșterea întârzierilor în livrare","Imposibilitatea de a reduce stocurile","Lipsa oricărei legături cu programul master"],a:0,ex:"Avantajele (stocuri mai mici, livrare promptă) depind de fiabilitatea previziunilor; costurile de implementare sunt mari."},
+{id:"k1",type:"classify",q:"Tipul cererii pentru fiecare articol.",cats:["Cerere independentă","Cerere dependentă"],rows:[["Automobilele vândute dealerilor",0],["Plăcuțele de frână pentru mașinile din PMP",1],["Laptopurile vândute online",0],["Șuruburile pentru scaunele programate",1],["Scaunele de birou comandate de un client",0],["Tabla pentru carcasele de produs",1]],ex:"Cererea independentă vine din piață și se previzionează; cererea dependentă se calculează din structura produsului."},
+{id:"k2",type:"classify",q:"Avantaj sau dezavantaj al unui sistem MRP?",cats:["Avantaj","Dezavantaj"],rows:[["Reducerea stocurilor de producție neterminată",0],["Costurile de pregătire a listelor de materiale",1],["Reducerea timpilor morți",0],["Taxele de consultanță și formare",1],["Răspuns rapid la schimbarea strategiei",0]],ex:"Slide 45–46."},
+{id:"o1",type:"order",q:"Ordonați evoluția sistemelor de planificare.",steps:["MRP","MRP I","MRP II","ERP"],ex:"De la controlul inventarului la integrarea tuturor proceselor firmei."},
+{id:"g1",type:"calc",gen:"mrp",title:"Registrul MRP: CN și lansări"},
+{id:"g2",type:"calc",gen:"bom",title:"Explozia listei de materiale"}
+]},
+/* ================= 5 ================= */
+{id:"m5",nr:5,title:"Organizarea",src:"Curs 6, Cap. 4.1",
+key:["Organizarea răspunde la întrebarea „cum facem efectiv ce s-a planificat?”.",
+"Baza organizării: tipul de producție; apoi procesul tehnologic; în vârf, produsul finit.",
+"Convențional-continuu: z = f(w, s); convențional-discontinuu: z = f(w, d).",
+"Tipul de producție se determină la nivel de reper-operație sau verigă, după numărul de obiecte-operație No.",
+"Nomenclatura largă duce la descentralizare; producția pe comenzi grupează utilajele pe tipuri, fluxul le așază pe linii."],
+items:[
+{id:"q1",type:"mcq",q:"La ce întrebare răspunde organizarea, ca funcție a MO?",opts:["Cum se realizează efectiv ceea ce s-a planificat?","Ce produse vom vinde peste 10 ani?","Cât costă un produs?","Cine sunt concurenții?"],a:0,ex:"Organizarea construiește cadrul: structuri, responsabilități și relații."},
+{id:"q2",type:"mcq",q:"În formula procesului convențional-continuu z = f(w, s), ce reprezintă s?",opts:["Stocurile de producție neterminată aflate permanent în prelucrare","Salariul mediu","Numărul de schimburi","Suprafața halei"],a:0,ex:"z = momentul lansării, w = termenul de obținere, s = stocurile aflate permanent în prelucrare."},
+{id:"q3",type:"mcq",q:"Un proces convențional-discontinuu se caracterizează prin:",opts:["producție în loturi, cu pauze între operații sau comenzi","flux neîntrerupt și automatizat","cost unitar minim și flexibilitate redusă","absența oricărei planificări"],a:0,ex:"z = f(w, d), unde d ține de durata ciclului sau de întreruperile dintre loturi; e flexibil, dar mai puțin eficient."},
+{id:"q4",type:"mcq",q:"La ce nivel se recomandă determinarea tipului de producție?",opts:["La nivel de reper-operație sau de verigă de producție","Doar la nivelul întregii fabrici","La nivelul departamentului de vânzări","La nivelul grupului de firme"],a:0,ex:"Niciun sistem nu e pur; tipul se stabilește pentru fiecare linie, secție sau produs."},
+{id:"q5",type:"mcq",q:"Care este criteriul principal pentru aprecierea cantitativă a tipului de producție?",opts:["Numărul de obiecte-operație (No) executate la un loc de muncă","Numărul de angajați","Cifra de afaceri","Suprafața de producție"],a:0,ex:"No mic = specializare mare (masă); No mare = individuală."},
+{id:"q6",type:"mcq",q:"Cum influențează o nomenclatură de fabricație foarte variată managementul operațional?",opts:["Determină o descentralizare a muncii de MO la nivelul secțiilor, atelierelor și locurilor de muncă","Impune centralizarea tuturor deciziilor","Elimină nevoia de coordonare","Nu are nicio influență"],a:0,ex:"Într-un atelier de mobilier personalizat, fiecare atelier decide ordinea operațiilor; într-o fabrică auto, deciziile se centralizează."},
+{id:"q7",type:"mcq",q:"În producția pe comenzi individuale, utilajele se amplasează de regulă:",opts:["pe grupe de mașini de același tip","pe o bandă rulantă unică","în ordinea strictă a operațiilor pe o linie","aleatoriu"],a:0,ex:"Producția în flux așază utilajele în ordinea operațiilor (linii, bandă rulantă, producție sincron)."},
+{id:"q8",type:"mcq",q:"Care dintre următorii NU este un factor de complexitate a organizării, conform slide-ului 2?",opts:["Prețul de vânzare al produsului","Numărul de niveluri de structură","Complexitatea legăturilor constructive","Diversitatea materiilor prime"],a:0,ex:"Factorii: niveluri de structură, componente pe nivel, legături constructive, repere executate simultan, diversitatea materiilor prime."},
+{id:"c1",type:"mcq",case:true,ctx:"Un atelier execută piese de schimb pentru utilaje vechi: fiecare comandă e diferită, iar la un strung s-au executat luna trecută 34 de obiecte-operație distincte.",q:"Ce tip de producție și ce organizare se potrivesc?",opts:["Producție individuală; organizare flexibilă, descentralizată, utilaje grupate pe tipuri","Producție de masă; linie automatizată în flux","Serie mare; bandă rulantă","Serie mijlocie; centralizare totală"],a:0,ex:"No > 20 indică producție individuală; organizarea trebuie să fie flexibilă și descentralizată."},
+{id:"k1",type:"classify",q:"Ce tip de proces tehnologic are fiecare industrie?",cats:["Convențional-continuu","Convențional-discontinuu"],rows:[["Rafinărie",0],["Fabrică de ciment",0],["Confecții textile",1],["Centrală electrică",0],["Fabrică de mobilă",1],["Confecții metalice",1]],ex:"Curs 6: continuu = chimie, energie, ciment; discontinuu = textile, mobilă, mecanică."},
+{id:"k2",type:"classify",q:"Caracteristicile tipurilor de producție (slide 9).",cats:["Masă","Serie","Individuală"],rows:[["Nomenclatură singulară sau foarte redusă",0],["Nomenclatură instabilă, variată",2],["Specializare deplină a locurilor de muncă",0],["Specializare imposibilă",2],["Durata ciclului depinde de loturi",1],["Durata ciclului minimă",0]],ex:"Masă: volum foarte mare, ciclu minim, specializare deplină. Individuală: nomenclatură variată, ciclu relativ mare."},
+{id:"g1",type:"calc",gen:"tipprod",title:"Tipul de producție după No"}
+]},
+/* ================= 6 ================= */
+{id:"m6",nr:6,title:"Coordonarea: inventar, loturi, ciclul de producție",src:"Curs 7, Cap. 5.1",
+key:["Lotul de fabricație: produse identice lansate simultan, prelucrate pe aceleași locuri de muncă, cu un singur timp de pregătire-încheiere.",
+"Factorii pot cere mărirea, reducerea sau delimitarea mărimii lotului.",
+"L₀ = √(2·D·Co/Ch); nL = N/L₀; R = T/nL.",
+"Dcp = Tpi + Tteh + Tn + Tct + Ttr + Tîntr.",
+"Stocurile de producție neterminată asigură continuitatea și ritmicitatea fabricației."],
+items:[
+{id:"q1",type:"mcq",q:"Lotul de fabricație este:",opts:["cantitatea de produse identice lansate simultan, prelucrate pe aceleași locuri de muncă, cu un singur timp de pregătire-încheiere","numărul total de produse fabricate într-un an","stocul de siguranță al unei piese","cantitatea comandată de un client"],a:0,ex:"Este principalul parametru al MO în producția de serie; de el depind ceilalți parametri."},
+{id:"q2",type:"mcq",q:"Care NU este un scop al inventarului?",opts:["Creșterea timpului de pregătire-încheiere","Menținerea independenței operaționale","Satisfacerea variației cererii","Flexibilitate în programarea producției"],a:0,ex:"Scopuri: independență operațională, variația cererii, flexibilitate, avantajul mărimii economice a comenzilor."},
+{id:"q3",type:"mcq",q:"Criteriul economic de dimensionare a lotului urmărește:",opts:["mărimea care conduce la costul unitar minim","mărimea impusă de durata perioadei contabile","nivelul acceptabil al activelor circulante imobilizate","numărul strict de ore de funcționare a utilajului"],a:0,ex:"Criteriul financiar = nivel acceptabil al activelor imobilizate; criteriul fondului de timp = ore strict limitate."},
+{id:"q4",type:"mcq",q:"Ce include timpul de pregătire-încheiere?",opts:["Emiterea documentației, reglarea utilajelor, piesele de probă, predarea lucrărilor","Doar timpul de prelucrare efectivă a piesei","Timpul de transport la client","Concediul de odihnă al muncitorilor"],a:0,ex:"Cheltuielile de pregătire-încheiere trebuie incluse integral pentru determinarea corectă a lotului."},
+{id:"q5",type:"mcq",q:"Periodicitatea lansării loturilor în fabricație este:",opts:["intervalul de timp dintre două lansări consecutive","durata prelucrării unui lot","numărul de loturi pe an","timpul de transport între secții"],a:0,ex:"R = T / nL, unde nL = N / L₀."},
+{id:"q6",type:"mcq",q:"Ce efect economic are lotizarea fabricației?",opts:["Crește fondul de timp efectiv lucrat și scade volumul documentației de lansare","Crește costul unitar","Elimină nevoia de control","Crește numărul de reglaje"],a:0,ex:"Slide 12: timp efectiv lucrat mai mare, grad de utilizare stabil, mai puțină documentație, costuri mai mici."},
+{id:"q7",type:"mcq",q:"Care este o cale de reducere a duratei ciclului de producție?",opts:["Reducerea duratei întreruperilor interoperații","Creșterea stocului de producție neterminată","Mărirea timpului de pregătire-încheiere","Adăugarea de controale manuale suplimentare"],a:0,ex:"Căi: scurtarea operațiilor tehnologice, reducerea Tpi, control mecanizat și automatizat, reducerea întreruperilor."},
+{id:"c1",type:"mcq",case:true,ctx:"Fabrimob produce mobilier la comandă. Prețurile la materiale cresc, iar cererea scade. Managementul vrea loturi mai mici.",q:"Care factor justifică reducerea lotului?",opts:["Reducerea imobilizărilor de capital în stocuri","Reducerea cheltuielilor de pregătire-încheiere pe unitatea de produs","Capacitatea mijloacelor de transport","Creșterea productivității prin serii lungi"],a:0,ex:"Reducerea imobilizărilor cere loturi mai mici; reducerea Tpi pe unitate cere loturi mai mari; transportul delimitează mărimea."},
+{id:"k1",type:"classify",q:"Clasificați factorii care influențează mărimea lotului.",cats:["Cer mărirea lotului","Cer reducerea lotului","Delimitează mărimea"],rows:[["Reducerea cheltuielilor de pregătire-încheiere pe unitate",0],["Reducerea ciclului de fabricație",1],["Durata de folosință a SDV-urilor între reascuțiri",2],["Folosirea rațională a capacităților",0],["Livrări la intervale mici, în cantități reduse",1],["Capacitatea mijloacelor de transport",2],["Reducerea imobilizărilor",1],["Capacitatea de producție a secției",2]],ex:"Slide 10."},
+{id:"k2",type:"classify",q:"Ce componentă a ciclului de producție este fiecare situație?",cats:["Tpi","Tteh","Tn","Tct","Ttr","Tîntr"],rows:[["Reglarea strungului înainte de lot",0],["Frezarea efectivă a piesei",1],["Uscarea vopselei timp de 24 de ore",2],["Verificarea cotelor cu șublerul",3],["Mutarea paletului la secția de montaj",4],["Piesele așteaptă eliberarea mașinii următoare",5]],ex:"Tpi pregătire-încheiere, Tteh tehnologic, Tn procese naturale, Tct control tehnic, Ttr transport, Tîntr întreruperi."},
+{id:"g1",type:"calc",gen:"eoq",title:"Lotul optim și periodicitatea"},
+{id:"g2",type:"calc",gen:"costlot",title:"Lot mic sau lot mare?"},
+{id:"g3",type:"calc",gen:"dcp",title:"Durata ciclului de producție"},
+{id:"g4",type:"calc",gen:"period",title:"Numărul de loturi și periodicitatea"}
+]},
+/* ================= 7 ================= */
+{id:"m7",nr:7,title:"Antrenarea și lansarea în fabricație",src:"Curs 8, Cap. 6.1",
+key:["Antrenarea transmite, de la subiectul conducător la obiectul condus, sarcinile de fabricație.",
+"Lansarea se află în avalul programării și în amontele controlului.",
+"Documente: bonuri de consum, bonuri (dispoziții) de lucru, note de predare, borderoul documentelor de lansare.",
+"Metode: pe bază de grafice, de devansări, de stoc, lansare grupată. Forme: centralizată și descentralizată.",
+"Ordonanțare: regula NB (euristică) pentru un utilaj; algoritmul Johnson (optim) pentru două utilaje."],
+items:[
+{id:"q1",type:"mcq",q:"Ce înseamnă că lansarea în fabricație se situează „în avalul programării și în amontele controlului”?",opts:["Vine după programare și înaintea controlului","Vine înaintea programării și după control","Înlocuiește programarea și controlul","Are loc simultan cu programarea"],a:0,ex:"Programare → antrenare → lansare în fabricație → controlul producției."},
+{id:"q2",type:"mcq",q:"Bonul de consum (de materiale) servește la:",opts:["eliberarea materialelor din magazie către producție","autorizarea execuției unei operații","transferul pieselor între secții","centralizarea tuturor documentelor"],a:0,ex:"Fără bonul de consum nu se pot controla nici consumurile, nici costurile."},
+{id:"q3",type:"mcq",q:"Devansarea calendaristică înseamnă:",opts:["începerea lucrării mai devreme decât în programul inițial, fără a modifica cantitățile","creșterea cantităților programate","amânarea lansării","eliminarea unei operații"],a:0,ex:"Se modifică momentul începerii, pentru ca producția să fie gata la termen."},
+{id:"q4",type:"mcq",q:"Lansarea pe bază de stoc este specifică:",opts:["producției de masă și produselor standardizate cu stocuri minime prestabilite","producției de prototipuri unicat","proiectelor de construcții","serviciilor de consultanță"],a:0,ex:"Când stocul scade sub prag, se lansează automat producția (ex. rulmenți, șuruburi)."},
+{id:"q5",type:"mcq",q:"Ce face regula NB (Next Best)?",opts:["Alege la fiecare pas produsul următor cu cel mai mic timp de reglare","Garantează soluția optimă globală","Ordonează produsele alfabetic","Se aplică doar pentru două utilaje"],a:0,ex:"NB este o euristică de tip „greedy”; are trei variante: origine fixă, origine variabilă, reducerea coloanelor."},
+{id:"q6",type:"mcq",q:"În algoritmul Johnson, dacă valoarea minimă din tabel aparține utilajului U2, reperul:",opts:["se plasează cât mai la coada succesiunii","se plasează primul","se elimină din producție","se prelucrează doar pe U2"],a:0,ex:"Minim pe U1 → cât mai în față; minim pe U2 → cât mai în spate."},
+{id:"q7",type:"mcq",q:"Ce minimizează algoritmul Johnson?",opts:["Durata totală de trecere a tuturor reperelor prin cele două utilaje","Numărul de muncitori","Costul materiilor prime","Numărul de repere"],a:0,ex:"Este o metodă optimă pentru n produse pe două utilaje, în aceeași ordine."},
+{id:"q8",type:"mcq",q:"Care este un dezavantaj al lansării centralizate?",opts:["Risc operațional mare: o singură fabrică poate bloca toată producția","Costuri de investiție foarte mari","Control slab al calității","Complexitate managerială ridicată"],a:0,ex:"Centralizarea are economie de scară și control bun al calității, dar transport scump și flexibilitate redusă."},
+{id:"k1",type:"classify",q:"Ce document de lansare descrie fiecare situație?",cats:["Bon de consum","Bon (dispoziție) de lucru","Notă de predare","Borderoul documentelor"],rows:[["„Operația 25, frezare, lot 100 buc, 0,8 min/buc, freza F2”",1],["Strunjirea predă 200 de bucăți rectificării, cu 3 rebuturi",2],["45 kg tablă OL37 eliberată din Magazia 1",0],["Lista cu toate documentele emise pentru lotul 47",3]],ex:"Curs 8: bon de consum = materiale; dispoziție de lucru = autorizarea operației; nota de predare = transfer; borderoul = centralizare și trasabilitate."},
+{id:"k2",type:"classify",q:"Ce metodă de lansare se potrivește?",cats:["Pe bază de grafice","Pe bază de devansări","Pe bază de stoc","Lansare grupată"],rows:[["Uscarea pieselor durează 48 de ore, deci se pornește mai devreme",1],["Stocul de rulmenți scade sub 5.000 buc și se lansează automat producția",2],["Comenzi mici de diferite culori se adună pentru a schimba matrița mai rar",3],["Fiecare lot intră în debitare la ora fixată în programul detaliat",0]],ex:"Fiecare metodă se potrivește unui anumit ritm și grad de predictibilitate a cererii."},
+{id:"k3",type:"classify",q:"Lansare centralizată sau descentralizată?",cats:["Centralizată","Descentralizată"],rows:[["Costuri de transport ridicate",0],["Adaptare rapidă la piața regională",1],["Economie de scară",0],["Risc distribuit între unități",1],["Tipică pentru FMCG și băuturi",1],["Complexitate managerială redusă",0]],ex:"Tabelul comparativ din Curs 8."},
+{id:"o1",type:"order",q:"Ordonați etapele lansării în fabricație.",steps:["Determinarea necesarului de articole","Bonul de materiale și borderoul de materiale","Dispoziția de lucru și borderoul de manoperă","Controlul, evidența, difuzarea și arhivarea documentelor"],ex:"O eroare la început se propagă pe tot fluxul."},
+{id:"g1",type:"calc",gen:"johnson",title:"Algoritmul Johnson"},
+{id:"g2",type:"calc",gen:"nb",title:"Regula NB cu origine fixă"}
+]},
+/* ================= 8 ================= */
+{id:"m8",nr:8,title:"Controlul",src:"Curs 10, Cap. 7",
+key:["Etape: stabilirea standardelor, măsurarea performanței, compararea și determinarea abaterilor, măsurile de corecție.",
+"Ciclul programare–control: fără abateri, programul se menține; cu abateri, sistemele informaționale de reacție declanșează corecții și reconsiderarea programelor.",
+"Măsurarea trebuie să fie utilă, fiabilă, actuală și economică.",
+"Controlul producției: cantitativ, calitativ, al costurilor.",
+"Urmărire pe orizontală (fluxul produsului), pe verticală (locul de muncă) sau mixtă; metode pe bază de program-grafic, documente sau stocuri."],
+items:[
+{id:"q1",type:"mcq",q:"Ce se întâmplă în ciclul programare–control când nu există abateri?",opts:["Programul este menținut","Se elaborează imediat măsuri corective","Se reconsideră toate programele","Se oprește producția"],a:0,ex:"Abia la abateri intervin sistemele informaționale de reacție."},
+{id:"q2",type:"mcq",q:"Un standard, în procesul de control, este:",opts:["o caracteristică a procesului sau produsului prescrisă înainte de desfășurare","rezultatul obținut la final","o sancțiune pentru abateri","un raport de audit"],a:0,ex:"Standardele vizează volumul de muncă, cantitativ și calitativ, într-un interval de timp."},
+{id:"q3",type:"mcq",q:"Ce caracteristică a măsurării lipsește dacă o firmă aeriană analizează punctualitatea pe datele din sezonul trecut?",opts:["Actualitatea","Fiabilitatea","Economicitatea","Utilitatea"],a:0,ex:"Măsurarea trebuie să fie utilă, fiabilă, actuală și economică."},
+{id:"q4",type:"mcq",q:"Urmărirea pe orizontală înseamnă:",opts:["urmărirea unui produs sau lot pe măsură ce trece prin fazele procesului","urmărirea unui singur loc de muncă","verificarea doar a produsului final","compararea cu alte firme"],a:0,ex:"Orizontală = perspectiva fluxului; verticală = perspectiva postului; în practică se folosește forma mixtă."},
+{id:"q5",type:"mcq",q:"În diagrama controlului cantitativ, ce face dispecerul când o operație este întârziată?",opts:["Analizează întârzierea, urgentează și consemnează în caietul dispecer","Anulează comanda","Așteaptă finalul lunii","Mută operația la client"],a:0,ex:"Apoi verifică dacă există capacități disponibile în alte secții sau solicită colaborări externe."},
+{id:"q6",type:"mcq",q:"În sistemul PULL, fiecare produs este executat:",opts:["pentru a satisface o cerere venită de la locul de muncă următor","conform programului, indiferent de cerere","pentru a crește stocul","doar la sfârșitul lunii"],a:0,ex:"PULL („cerere-tragere”) stă la baza JIT; PUSH („împingere”) e sistemul clasic."},
+{id:"q7",type:"mcq",q:"Ordinea corectă în procesul calității este:",opts:["organismul tehnic fixează standardele, cel executiv fabrică, cel informativ inspectează","inspecția precede stabilirea standardelor","fabricația precede stabilirea standardelor","nu există o ordine"],a:0,ex:"Produsele fără deviații merg la comercializare; cele cu deviații intolerabile se recondiționează sau se elimină."},
+{id:"c1",type:"mcq",case:true,ctx:"Într-o fabrică de confecții, stocul de piese croite dintre secția de croit și cea de cusut crește de la o zi la alta.",q:"Ce metodă de control a semnalat problema și unde este, probabil, blocajul?",opts:["Control pe bază de stocuri; blocajul este la cusut","Control pe bază de documente; blocajul este la croit","Control strategic; blocajul este la vânzări","Control „totul sau nimic”; blocajul este la ambalare"],a:0,ex:"Dacă stocurile intermediare cresc, operația din aval nu ține ritmul."},
+{id:"k1",type:"classify",q:"Ce formă de control descrie fiecare situație?",cats:["Anticipat","„Totul sau nimic”","A posteriori"],rows:[["Calibrarea aparatelor înainte de pornirea producției",0],["Un lot farmaceutic e respins integral pentru un parametru depășit",1],["Analiza lunară a respectării termenului de 48 h la reclamații",2],["Instruirea personalului înainte de lansarea unui produs nou",0]],ex:"Formele se diferențiază după momentul în care intervine controlul."},
+{id:"k2",type:"classify",q:"Clasificați după nivel și tehnologie.",cats:["Control operațional","Control strategic","Unitate „cibernetică”"],rows:[["Monitorizarea zilnică a timpului de livrare",0],["Analiza trimestrială pentru intrarea pe o piață nouă",1],["Un CNC se oprește singur când piesa iese din toleranță",2],["Verificarea cantităților realizate în fiecare tură",0]],ex:"Operațional = activități zilnice; strategic = direcția organizației; cibernetic = control integrat în tehnologie."},
+{id:"o1",type:"order",q:"Ordonați etapele procesului de control.",steps:["Stabilirea standardelor","Măsurarea performanței","Compararea și determinarea abaterilor","Introducerea măsurilor de corecție"],ex:"Stabilești ce vrei, vezi ce ai obținut, corectezi ce nu merge."},
+{id:"g1",type:"calc",gen:"gantt",title:"Grafic Gantt cumulativ"}
+]},
+/* ================= 9 ================= */
+{id:"m9",nr:9,title:"Metode ale managementului operațional",src:"Cap. 8.1",
+key:["JIT: nivel scăzut de muncă în procesare și inventar, calitate ridicată, sistem PULL.",
+"Kanban este metoda de „autorizare” a producției și a mișcării materialelor în JIT.",
+"MRP: planificare-programare și control, informații detaliate, informatizare; JIT: îmbunătățire continuă, eliminarea pierderilor, control vizual.",
+"JOBSCOP se conduce după comenzi, verifică capacitatea înainte de acceptare și reprogramează o singură comandă.",
+"Metoda priorităților se bazează pe calculul ciclurilor de fabricație și al devansărilor."],
+items:[
+{id:"q1",type:"mcq",q:"Ce rol are sistemul Kanban în JIT?",opts:["Metodă de autorizare a producției și a mișcării materialelor","Program de contabilitate","Metodă de recrutare","Algoritm de calcul al lotului optim"],a:0,ex:"Kanban operaționalizează principiul PULL, cu control simplu, adesea manual și vizual."},
+{id:"q2",type:"mcq",q:"Ce presupune JIT, dincolo de stocurile reduse?",opts:["Niveluri ridicate de calitate","Loturi cât mai mari","Stocuri mari de siguranță","Renunțarea la programul master"],a:0,ex:"Stocurile mici sunt posibile doar dacă procesul produce calitate constantă."},
+{id:"q3",type:"mcq",q:"Ce face JOBSCOP înainte de acceptarea unei comenzi?",opts:["Verifică disponibilitatea capacităților la locurile de muncă implicate","Calculează necesarul pentru toate elementele sistemului","Stabilește un timp de devansare fix","Cere modificarea definitivă a produsului"],a:0,ex:"În MRP locurile de muncă sunt încărcate infinit, fără restricții de capacitate."},
+{id:"q4",type:"mcq",q:"Ce înseamnă că în MRP locurile de muncă sunt „încărcate infinit”?",opts:["Sistemul nu ține cont de restricțiile de capacitate","Locurile de muncă lucrează non-stop","Nu există stocuri","Capacitatea crește automat"],a:0,ex:"Supraîncărcările și subîncărcările se rezolvă local, nu automat."},
+{id:"q5",type:"mcq",q:"Ce abordare pentru problemele de calitate NU apare în JIT, conform cursului?",opts:["Inspecția finală a fiecărui lot ca singură garanție","Proiectarea calității în produs și proces","Conlucrarea cu furnizorii","Responsabilizarea angajaților"],a:0,ex:"JIT mută calitatea în proiectare, în relația cu furnizorii și în responsabilitatea oamenilor."},
+{id:"c1",type:"mcq",case:true,ctx:"O firmă de utilaje la comandă primește des cereri cu materiale speciale și modificări de design pentru un singur client. Planificatorii se plâng că sistemul rigid îi obligă să recalculeze tot programul la fiecare modificare.",q:"Ce metodă se potrivește mai bine?",opts:["JOBSCOP, pentru că permite reprogramarea unei comenzi și modificarea normelor pentru o singură comandă","MRP clasic, pentru că are timpi de devansare fixi","JIT pur, cu Kanban pentru fiecare piesă unicat","Planificarea agregat pe 18 luni"],a:0,ex:"JOBSCOP e flexibil, condus de comenzi și permite materiale speciale fără stoc permanent."},
+{id:"k1",type:"classify",q:"MRP sau JIT? (slide 7)",cats:["MRP","JIT"],rows:[["Liste de materiale (BOM)",0],["Kanban",1],["Eliminarea pierderilor",1],["Informații detaliate, de mare acuratețe",0],["Operaționalizare prin informatizare",0],["Implicare activă, inventar redus",1]],ex:"MRP: planificare-programare și control, implicare pasivă. JIT: îmbunătățire continuă, control simplu."},
+{id:"k2",type:"classify",q:"JOBSCOP sau MRP? (slide 11–12)",cats:["JOBSCOP","MRP"],rows:[["Sistemul se conduce după comenzi",0],["Fiecare element are un timp de devansare predeterminat",1],["Recalculează devansările după încărcarea locurilor de muncă",0],["Modificările de norme cer schimbarea definitivă a produsului de către Proiectare",1],["Actualizare permanentă, în timp real",0],["Toate elementele trebuie definite ca elemente de inventar",1]],ex:"Analiza comparativă din Cap. 8.1."},
+{id:"g1",type:"calc",gen:"prioritati",title:"Calculul priorităților"}
+]},
+/* ================= 10 ================= */
+{id:"m10",nr:10,title:"Eficiența managementului operațional",src:"Cap. 9",
+key:["Eficiența MO are și o formă necuantificabilă, cu efect propagat și de perspectivă.",
+"Abordarea eficienței se nuanțează după sistemul, metodele și tehnicile de conducere folosite.",
+"Metode neparametrice (anchete, chestionare, interviuri) și parametrice (teoria informației, metode matematice).",
+"Sistemul coeficienților organizatorici exprimă variabilele organizaționale ca mărimi relative.",
+"Indicatori sintetici: îndeplinirea programului, ritmicitatea, folosirea capacității și a fondului de timp, viteza de rotație a mijloacelor circulante, ponderea cheltuielilor neeconomicoase, costul MO."],
+items:[
+{id:"q1",type:"mcq",q:"Ce particularitate are eficiența managementului operațional?",opts:["Are și o formă necuantificabilă, cu caracter propagat și de perspectivă","Se poate măsura exclusiv prin profit","Este identică cu eficiența managementului general","Nu poate fi analizată"],a:0,ex:"Cap. 9: forma necuantificabilă are efecte benefice multiple, propagate și de perspectivă."},
+{id:"q2",type:"mcq",q:"Care dintre metode este neparametrică?",opts:["Chestionarul","Metoda entropiei","Metoda „Management Games”","Indicele funcțional de progres"],a:0,ex:"Neparametrice: anchete, chestionare, interviuri. Parametrice: teoria informației și metode matematice."},
+{id:"q3",type:"mcq",q:"Metoda entropiei face parte din:",opts:["metodele parametrice bazate pe teoria informației","metodele neparametrice","metodele de recrutare","metodele de lansare în fabricație"],a:0,ex:"Teoria informației: entropia, cantitatea de informații, energia informațională."},
+{id:"q4",type:"mcq",q:"Ce caracterizează sistemul coeficienților organizatorici?",opts:["Estimarea cantitativă a variabilelor organizaționale, ca mărimi relative","Evaluarea calitativă prin interviuri","Calculul salariilor","Stabilirea prețurilor"],a:0,ex:"Din variabilele organizaționale se construiesc indicatori sintetici."},
+{id:"q5",type:"mcq",q:"Care NU este un indicator sintetic al MO din lista cursului?",opts:["Numărul de urmăritori pe rețelele sociale","Coeficientul mediu al ritmicității","Indicatorul folosirii capacității","Ponderea cheltuielilor neeconomicoase în cost"],a:0,ex:"Lista cuprinde zece indicatori, inclusiv costul implementării metodologiei de MO."},
+{id:"q6",type:"mcq",q:"De ce apare „costul acțiunilor de implementare a metodologiei de MO” printre indicatori?",opts:["Pentru că metodele riguroase pot fi costisitoare și trebuie comparate cu beneficiul lor","Pentru că MO nu are costuri","Pentru că e cerut de legislația fiscală","Pentru că înlocuiește costul de producție"],a:0,ex:"Întrebarea de autoevaluare: cum determinați un cost „acceptabil” al MO? Beneficiul trebuie să depășească costul."},
+{id:"c1",type:"mcq",case:true,ctx:"O secție a realizat 102% din programul lunar, dar aproape toată producția s-a făcut în ultima decadă, cu ore suplimentare.",q:"Ce arată situația?",opts:["Programul e îndeplinit, dar ritmicitatea este slabă","Secția este perfect eficientă","Capacitatea este subdimensionată","Nu există nicio problemă de management operațional"],a:0,ex:"Îndeplinirea programului și ritmicitatea sunt indicatori diferiți; supramunca de final de lună e o cheltuială neeconomicoasă."},
+{id:"k1",type:"classify",q:"Clasificați metodele de măsurare a eficienței.",cats:["Neparametrice","Parametrice: teoria informației","Parametrice: metode matematice"],rows:[["Interviuri",0],["Cantitatea de informații",1],["Simulation Games",2],["Anchete",0],["Energia informațională",1],["Indicele funcțional de progres",2]],ex:"Cap. 9, slide 4."},
+{id:"g1",type:"calc",gen:"indicatori",title:"Indicatori de eficiență"},
+{id:"g2",type:"calc",gen:"ritm",title:"Coeficientul de ritmicitate"}
+]}
+];
+if(typeof module!=="undefined")module.exports={MODULES};
+
+/* ===== Ilustrații SVG desenate în cod ===== */
+const HUE=["#0FA3A3","#5B7CFA","#FF8A5B","#2BB673","#9B6BFF","#F5A623","#EF5D7A","#1E9BD7","#14B8A6","#7C5CFF","#FFB400"];
+const ICON={
+1:`<g fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="0" cy="0" r="5"/>${[0,45,90,135,180,225,270,315].map(a=>`<line x1="0" y1="-7" x2="0" y2="-10" transform="rotate(${a})"/>`).join("")}</g>`,
+2:`<g fill="none" stroke="#fff" stroke-width="2.2"><circle r="9"/><circle r="5"/><circle r="1.6" fill="#fff"/></g><path d="M2 -2 L11 -11 M7 -11 L11 -11 L11 -7" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+3:`<g fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><rect x="-9" y="-8" width="18" height="17" rx="2"/><line x1="-9" y1="-3" x2="9" y2="-3"/><line x1="-4" y1="-11" x2="-4" y2="-6"/><line x1="4" y1="-11" x2="4" y2="-6"/></g><g fill="#fff"><circle cx="-4" cy="2" r="1.4"/><circle cx="0" cy="2" r="1.4"/><circle cx="4" cy="2" r="1.4"/><circle cx="-4" cy="6" r="1.4"/></g>`,
+4:`<g fill="#fff"><rect x="-3.5" y="-11" width="7" height="6" rx="1"/><rect x="-11" y="4" width="7" height="6" rx="1"/><rect x="4" y="4" width="7" height="6" rx="1"/></g><path d="M0 -5 V0 M-7.5 4 V0 H7.5 V4" stroke="#fff" stroke-width="2" fill="none"/>`,
+5:`<g fill="#fff"><rect x="-11" y="-10" width="8" height="8" rx="1.5"/><rect x="3" y="-10" width="8" height="8" rx="1.5"/><rect x="-11" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="3" width="8" height="8" rx="1.5" opacity=".55"/></g>`,
+6:`<g fill="#fff"><rect x="-10" y="3" width="20" height="7" rx="1.5"/><rect x="-7" y="-5" width="14" height="7" rx="1.5" opacity=".85"/><rect x="-4" y="-12" width="8" height="6" rx="1.5" opacity=".7"/></g>`,
+7:`<path d="M-5 -9 L9 0 L-5 9 Z" fill="#fff"/><path d="M-12 12 H12" stroke="#fff" stroke-width="2" stroke-dasharray="3 2"/>`,
+8:`<g fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><circle cx="-2" cy="-2" r="7"/><line x1="3" y1="3" x2="10" y2="10"/></g><path d="M-5 -2 l2 2 l4 -4" stroke="#fff" stroke-width="2" fill="none"/>`,
+9:`<g fill="#fff"><rect x="-11" y="-10" width="6" height="20" rx="1.5" opacity=".6"/><rect x="-3" y="-10" width="6" height="13" rx="1.5"/><rect x="5" y="-10" width="6" height="8" rx="1.5" opacity=".85"/></g>`,
+10:`<path d="M-11 5 A11 11 0 0 1 11 5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><line x1="0" y1="5" x2="6" y2="-4" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="0" cy="5" r="2.4" fill="#fff"/>`,
+11:`<path d="M-7 -10 H7 V-3 A7 7 0 0 1 -7 -3 Z" fill="#fff"/><path d="M-7 -8 H-11 V-5 A4 4 0 0 0 -7 -2 M7 -8 H11 V-5 A4 4 0 0 1 7 -2" stroke="#fff" stroke-width="2" fill="none"/><rect x="-2" y="3" width="4" height="4" fill="#fff"/><rect x="-6" y="7" width="12" height="3" rx="1" fill="#fff"/>`
+};
+/* Hala: stare 0 = neîncepută, 1 = în lucru, 2 = finalizată */
+function hall(nr,state,stars){
+  const c=HUE[nr-1],lit=state===2,win=lit?"#FFE27A":state===1?"#CFE8FF":"#DCE3EA";
+  const wall=state===0?"#C9D3DD":"#FFFFFF";
+  const smoke=lit?`<g class="smoke"><circle cx="117" cy="18" r="5"/><circle cx="121" cy="10" r="6"/><circle cx="126" cy="2" r="7"/></g>`:"";
+  const st=stars?`<g transform="translate(80 108)">${[0,1,2].map(i=>`<path transform="translate(${(i-1)*18} 0) scale(.9)" d="M0 -8 L2.4 -2.6 L8 -2.4 L3.6 1.3 L5 7 L0 3.8 L-5 7 L-3.6 1.3 L-8 -2.4 L-2.4 -2.6 Z" fill="${i<stars?"#FFC93C":"#D5DCE3"}" stroke="${i<stars?"#E0A100":"#C2CBD4"}" stroke-width="1"/>`).join("")}</g>`:"";
+  return`<svg viewBox="0 0 160 120" class="hall ${lit?"lit":""}" aria-hidden="true">
+  ${smoke}
+  <rect x="110" y="22" width="12" height="40" rx="2" fill="${state===0?"#AEB9C4":"#5A6B7D"}"/>
+  <path d="M22 50 L22 92 L138 92 L138 50 L118 34 L118 50 L98 34 L98 50 L78 34 L78 50 L58 34 L58 50 L42 34 Z" fill="${wall}" stroke="${state===0?"#B5C0CB":c}" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M42 34 L58 50 M58 34 L78 50 M78 34 L98 50 M98 34 L118 50" stroke="${state===0?"#B5C0CB":c}" stroke-width="3"/>
+  ${[0,1,2,3].map(i=>`<rect x="${30+i*14}" y="60" width="9" height="11" rx="2" fill="${win}"/>`).join("")}
+  <rect x="96" y="70" width="22" height="22" rx="2" fill="${state===0?"#B5C0CB":c}" opacity=".85"/>
+  <circle cx="58" cy="82" r="0" />
+  <g transform="translate(118 50)"><circle r="15" fill="${state===0?"#AEB9C4":c}" stroke="#fff" stroke-width="3"/>${ICON[nr]}</g>
+  <rect x="14" y="92" width="132" height="5" rx="2.5" fill="${state===0?"#C9D3DD":"#3D4B5C"}"/>
+  ${st}</svg>`;
+}
+/* Scenă mare pentru ecranul de început al modulului */
+function scene(nr){
+  const c=HUE[nr-1];
+  return`<svg viewBox="0 0 320 170" class="scene" aria-hidden="true">
+  <circle cx="270" cy="38" r="20" fill="#FFD45C"/>
+  <g fill="#fff" opacity=".9"><ellipse cx="70" cy="36" rx="26" ry="9"/><ellipse cx="88" cy="30" rx="16" ry="9"/><ellipse cx="210" cy="56" rx="20" ry="7"/></g>
+  <path d="M0 140 Q80 120 160 138 T320 132 V170 H0 Z" fill="${c}" opacity=".18"/>
+  <g transform="translate(80 18) scale(1.05)">${hall(nr,2,0).replace('<svg viewBox="0 0 160 120" class="hall lit" aria-hidden="true">',"").replace("</svg>","")}</g>
+  <g transform="translate(30 118)"><rect x="-3" y="0" width="6" height="18" fill="#7A5A3A"/><circle cx="0" cy="-6" r="13" fill="#2BB673"/></g>
+  <g transform="translate(290 116)"><rect x="-3" y="0" width="6" height="20" fill="#7A5A3A"/><circle cx="0" cy="-7" r="15" fill="#23A566"/></g>
+  <g class="belt"><rect x="40" y="152" width="240" height="8" rx="4" fill="#3D4B5C"/>${[0,1,2,3,4,5,6,7].map(i=>`<rect class="box" x="${50+i*30}" y="142" width="14" height="10" rx="2" fill="${HUE[(nr+i)%11]}"/>`).join("")}</g>
+  </svg>`;
+}
+const GRADES=[{n:"Ucenic",xp:0,e:"🧰"},{n:"Operator",xp:150,e:"🔧"},{n:"Maistru",xp:400,e:"🛠️"},{n:"Șef de secție",xp:800,e:"📋"},{n:"Manager operațional",xp:1300,e:"🏭"}];
+const BADGES=[
+{id:"first",e:"🚀",n:"Prima hală",d:"Ai terminat primul modul."},
+{id:"perfect",e:"💎",n:"Zero rebuturi",d:"O lecție terminată cu 100%."},
+{id:"streak5",e:"🔥",n:"Flux continuu",d:"5 răspunsuri corecte la rând."},
+{id:"streak10",e:"⚡",n:"Ritmicitate perfectă",d:"10 răspunsuri corecte la rând."},
+{id:"agregat",e:"📊",n:"Planificator",d:"Planificarea agregat rezolvată corect."},
+{id:"mrp",e:"🧩",n:"Precizie MRP",d:"Registrul MRP completat fără greșeală."},
+{id:"johnson",e:"⚙️",n:"Maestrul Johnson",d:"Algoritmul Johnson aplicat corect."},
+{id:"eoq",e:"📦",n:"Lotul optim",d:"Lotul optim calculat corect."},
+{id:"half",e:"🏗️",n:"Jumătate de fabrică",d:"5 module finalizate."},
+{id:"all",e:"🏭",n:"Fabrica e gata",d:"Toate cele 10 module finalizate."},
+{id:"final",e:"🏆",n:"Director de producție",d:"Testul final cu cel puțin 80%."}
+];
+
+/* ===== CONFIGURARE ===== */
+// Lipiți aici adresa Web App din Google Apps Script (vezi README). Gol = contorul e dezactivat.
+const COUNTER_URL = "";
+const STORE_KEY = "mo-joc-v2";
+const FINAL_N = 20;
+
+/* ===== STARE ===== */
+let S = load();
+function blank(){return{v:2,deviceId:null,mods:{},xp:0,badges:{},streak:0,bestStreak:0}}
+function load(){try{const x=JSON.parse(localStorage.getItem(STORE_KEY));if(x&&x.v===2)return x;}catch(e){}
+  const b=blank();try{const o=JSON.parse(localStorage.getItem("mo-exercitii-v1"));if(o&&o.mods){b.mods=o.mods;b.deviceId=o.deviceId||null;}}catch(e){}return b;}
+let saveT=null;
+function save(now){clearTimeout(saveT);const f=()=>{try{localStorage.setItem(STORE_KEY,JSON.stringify(S));}catch(e){}};now?f():saveT=setTimeout(f,250);}
+const newSeed=()=>Math.floor(Math.random()*2147483646)+1;
+function ms(id){if(!S.mods[id])S.mods[id]={items:{},best:null,last:null,done:false,attempts:0,seed:newSeed(),pos:0,xpRun:0,newBadges:[]};return S.mods[id];}
+function is(mid,iid){const m=ms(mid);if(!m.items[iid])m.items[iid]={seed:newSeed(),vals:{},checked:false,score:0};return m.items[iid];}
+
+/* ===== UTILITARE ===== */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct=x=>Math.round(x*100);
+const isMistake=(def,sc)=>def.type==="calc"?sc<0.5:sc<0.999;
+const RM=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
+function parseNum(s){
+  if(s===undefined||s===null)return NaN;s=String(s).trim().replace(/\s|\u00a0/g,"").replace("−","-").replace("%","");
+  if(s==="")return NaN;
+  if(s.includes(".")&&s.includes(","))s=s.replace(/\./g,"").replace(",",".");
+  else if(s.includes(","))s=s.replace(",",".");
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,"");
+  return Number(s);
+}
+function numOk(v,f){const x=parseNum(v);if(Number.isNaN(x))return false;
+  let tol=f.tolAbs!==undefined?f.tolAbs:f.tolRel!==undefined?Math.abs(f.ans)*f.tolRel:(f.dec?0.5*Math.pow(10,-f.dec)+1e-9:0.5);
+  if(f.tolAbs===undefined&&f.tolRel===undefined&&Math.abs(f.ans)>=1000)tol=Math.max(tol,Math.abs(f.ans)*0.001);
+  return Math.abs(x-f.ans)<=tol;}
+function shuffledIdx(n,seed){return mkR(seed).shuffle([...Array(n).keys()]);}
+const modById=id=>MODULES.find(m=>m.id===id);
+const typeLabel={mcq:"Grilă",case:"Studiu de caz",classify:"Clasificare",order:"Ordonare",calc:"Calcul"};
+const FINAL={id:"final",nr:11,title:"Testul final",src:`${FINAL_N} întrebări din toate modulele`,key:["Întrebările sunt alese aleator din toate cele 10 module.","La fiecare reluare primești alt set.","Ai nevoie de cel puțin 80% pentru insigna „Director de producție”."]};
+const modMeta=id=>id==="final"?FINAL:modById(id);
+
+/* ===== LOGICA ITEMILOR ===== */
+function itemDef(mid,iid){if(mid==="final"){const [m,i]=iid.split(".");return modById(m).items.find(x=>x.id===i);}return modById(mid).items.find(x=>x.id===iid);}
+function itemsOf(mid){
+  if(mid==="final"){const st=ms("final");const pool=[];MODULES.forEach(m=>m.items.forEach(i=>{if(i.type==="mcq")pool.push(m.id+"."+i.id);}));return mkR(st.seed).shuffle(pool).slice(0,FINAL_N);}
+  return modById(mid).items.map(i=>i.id);
+}
+const genOf=(def,st)=>GEN[def.gen](st.seed);
+function fieldOk(f,v){if(f.type==="select")return v!==undefined&&v!==""&&Number(v)===f.ans;return numOk(v,f);}
+function grade(def,st,g){
+  if(def.type==="mcq")return st.vals.c==def.a?1:0;
+  if(def.type==="classify")return def.rows.filter((r,k)=>Number(st.vals["r"+k])===r[1]).length/def.rows.length;
+  if(def.type==="order")return def.steps.filter((s,k)=>Number(st.vals["p"+k])===k).length/def.steps.length;
+  if(def.type==="calc")return g.fields.filter((f,k)=>fieldOk(f,st.vals["f"+k])).length/g.fields.length;
+}
+function complete(def,st,g){
+  const has=k=>st.vals[k]!==undefined&&String(st.vals[k]).trim()!=="";
+  if(def.type==="mcq")return has("c");
+  if(def.type==="classify")return def.rows.every((r,k)=>has("r"+k));
+  if(def.type==="order")return def.steps.every((s,k)=>has("p"+k));
+  if(def.type==="calc")return g.fields.every((f,k)=>has("f"+k));
+}
+function nfx(f){return f.dec?Number(f.ans).toLocaleString("ro-RO",{minimumFractionDigits:f.dec,maximumFractionDigits:f.dec}):Math.abs(f.ans)>=1000?Number(f.ans).toLocaleString("ro-RO",{maximumFractionDigits:0}):String(Math.round(f.ans*100)/100).replace(".",",");}
+function modStats(mid){const ids=itemsOf(mid);let checked=0,sum=0;ids.forEach(i=>{const st=S.mods[mid]&&S.mods[mid].items[i];if(st&&st.checked){checked++;sum+=st.score;}});return{total:ids.length,checked,sum,score:ids.length?sum/ids.length:0};}
+const starsFor=p=>p>=90?3:p>=75?2:p>=50?1:0;
+function gradeOf(xp){let g=GRADES[0],i=0;GRADES.forEach((x,k)=>{if(xp>=x.xp){g=x;i=k;}});const nx=GRADES[i+1];return{g,i,nx,frac:nx?(xp-g.xp)/(nx.xp-g.xp):1};}
+function modState(id){const st=S.mods[id];if(st&&st.done)return 2;if(st&&Object.values(st.items).some(x=>x.checked))return 1;return 0;}
+
+/* ===== BODY ITEM ===== */
+function itemBody(mid,iid){
+  const def=itemDef(mid,iid),st=is(mid,iid),dis=st.checked?"disabled":"";let g=null,h="";
+  if(def.type==="mcq"){
+    const perm=shuffledIdx(def.opts.length,st.seed),L="ABCD";
+    h=(def.ctx?`<div class="ctx"><span class="ctxk">Situația</span>${def.ctx}</div>`:"")+`<h2 class="q">${def.q}</h2><div class="opts" role="radiogroup">`+
+      perm.map((o,pi)=>{const sel=String(st.vals.c)===String(o);let m="";if(st.checked){if(o===def.a)m="right";else if(sel)m="wrong";}
+      return`<label class="opt ${sel?"sel":""} ${m}"><input type="radio" name="r-${iid}" value="${o}" ${sel?"checked":""} ${dis} data-k="c"><span class="ol">${L[pi]}</span><span class="ot">${def.opts[o]}</span></label>`;}).join("")+`</div>`;
+  }
+  if(def.type==="classify"){
+    h=`<h2 class="q">${def.q}</h2><div class="rows">`+def.rows.map((r,k)=>{const v=st.vals["r"+k];const m=st.checked?(Number(v)===r[1]?"right":"wrong"):"";
+      return`<div class="row ${m}"><span class="rt">${r[0]}</span><div class="chips" role="radiogroup" aria-label="${esc(r[0])}">${def.cats.map((c,ci)=>`<button type="button" class="chip ${String(v)===String(ci)?"on":""} ${st.checked&&ci===r[1]?"ans":""}" data-k="r${k}" data-v="${ci}" ${dis} aria-pressed="${String(v)===String(ci)}">${c}</button>`).join("")}</div></div>`;}).join("")+`</div>`;
+  }
+  if(def.type==="order"){
+    const perm=shuffledIdx(def.steps.length,st.seed);const placed=def.steps.map((s,k)=>st.vals["p"+k]).filter(x=>x!==undefined&&x!=="").map(Number);
+    h=`<h2 class="q">${def.q}</h2><p class="sub">Atinge pașii în ordinea corectă.</p><ol class="slots">`+def.steps.map((s,k)=>{const v=st.vals["p"+k];const has=v!==undefined&&v!=="";const m=st.checked?(Number(v)===k?"right":"wrong"):"";
+      return`<li class="slot ${has?"full":""} ${m}"><span class="sn">${k+1}</span><span>${has?def.steps[Number(v)]:"…"}</span>${st.checked&&Number(v)!==k?`<span class="fix">Corect: ${def.steps[k]}</span>`:""}</li>`;}).join("")+`</ol>`+
+      (st.checked?"":`<div class="pool">${perm.filter(o=>!placed.includes(o)).map(o=>`<button type="button" class="chip big" data-place="${o}">${def.steps[o]}</button>`).join("")}</div>${placed.length?`<button type="button" class="link" data-act="undo">Anulează ultimul pas</button>`:""}`);
+  }
+  if(def.type==="calc"){
+    g=genOf(def,st);
+    const fld=(f,k)=>{const v=st.vals["f"+k];const m=st.checked?(fieldOk(f,v)?"right":"wrong"):"";
+      const fix=st.checked&&!fieldOk(f,v)?`<span class="fix">Corect: ${f.type==="select"?f.options[f.ans]:nfx(f)}</span>`:"";
+      if(f.type==="select")return`<label class="fld ${m}"><span>${f.label}</span><select data-k="f${k}" ${dis}><option value="">Alege…</option>${f.options.map((o,oi)=>`<option value="${oi}" ${String(v)===String(oi)?"selected":""}>${o}</option>`).join("")}</select>${fix}</label>`;
+      return`<label class="fld ${m}"><span>${f.label}</span><input inputmode="decimal" autocomplete="off" data-k="f${k}" value="${esc(v??"")}" ${dis}>${fix}</label>`;};
+    let fields;
+    if(g.table){fields=`<div class="tw"><table class="grid"><thead><tr><th></th>${g.table.cols.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody>`+
+      g.table.rows.map((rn,ri)=>`<tr><th scope="row">${rn}</th>`+g.table.cols.map((c,ci)=>{const k=g.fields.findIndex(f=>f.row===ri&&f.col===ci);const f=g.fields[k];const v=st.vals["f"+k];const m=st.checked?(fieldOk(f,v)?"right":"wrong"):"";
+      return`<td class="${m}"><input inputmode="decimal" autocomplete="off" aria-label="${f.label}" data-k="f${k}" value="${esc(v??"")}" ${dis}>${st.checked&&!fieldOk(f,v)?`<span class="fix">${f.ans}</span>`:""}</td>`;}).join("")+`</tr>`).join("")+`</tbody></table></div>`;}
+    else fields=`<div class="flds">${g.fields.map(fld).join("")}</div>`;
+    h=`<h2 class="q">${def.title}</h2><div class="stmt">${g.text}</div>${fields}<p class="sub">Zecimalele se scriu cu virgulă. Separatorul de mii e opțional.</p>`;
+  }
+  return{h,g,def,st};
+}
+
+/* ===== VIEW: HARTA ===== */
+function home(){
+  const gr=gradeOf(S.xp);const stars=MODULES.reduce((a,m)=>a+(S.mods[m.id]&&S.mods[m.id].best!=null?starsFor(S.mods[m.id].best):0),0);
+  const done=MODULES.filter(m=>modState(m.id)===2).length;
+  const off=[0,62,78,30,-40,-78,-60,10,70,40,-20];
+  const nodes=MODULES.concat([FINAL]).map((m,i)=>{const s=m.id==="final"?(S.mods.final&&S.mods.final.done?2:modState("final")):modState(m.id);const best=S.mods[m.id]&&S.mods[m.id].best;
+    const next=m.id!=="final"&&s<2&&MODULES.slice(0,i).every(x=>modState(x.id)===2);
+    return`<li class="node ${next?"next":""}" style="--x:${off[i]}px"><a href="#/${m.id}" class="nl" aria-label="${m.id==="final"?"Testul final":"Modulul "+m.nr}: ${esc(m.title)}">
+      ${next?`<span class="here">Începe aici</span>`:""}${hall(m.nr,s,best!=null?starsFor(best):0)}<span class="nt"><b>${m.id==="final"?"Final":m.nr}</b> ${m.title}</span></a></li>`;}).join("");
+  const badges=BADGES.map(b=>{const has=S.badges[b.id];return`<li class="bdg ${has?"has":""}" title="${esc(b.d)}"><span class="be">${has?b.e:"🔒"}</span><span class="bn">${b.n}</span><span class="bd">${b.d}</span></li>`;}).join("");
+  return`<header class="hud"><div class="hrow"><span class="av">${gr.g.e}</span><div class="hinfo"><span class="hg">${gr.g.n}</span><div class="xpb"><i style="width:${gr.frac*100}%"></i></div><span class="hx">${S.xp} XP${gr.nx?` · încă ${gr.nx.xp-S.xp} până la ${gr.nx.n}`:" · grad maxim"}</span></div>
+    <div class="hstats"><span title="Stele">⭐ ${stars}</span><span title="Cea mai lungă serie">🔥 ${S.bestStreak||0}</span></div></div></header>
+  <section class="intro"><p class="kick">Management operațional · anul III</p><h1>Construiește-ți fabrica</h1><p>Fiecare hală este un capitol al cursului. Rezolvă exercițiile, adună stele și pornește toate cele 10 hale.</p><p class="pc">${done} din 10 hale pornite</p></section>
+  <ol class="map" id="map"><svg class="path" id="path" aria-hidden="true"></svg>${nodes}</ol>
+  <section class="sect"><h2>Insigne</h2><ul class="bgs">${badges}</ul></section>
+  <details class="sect tools"><summary>Progres și dispozitive</summary><p>Progresul se salvează doar în browserul de pe acest dispozitiv. Nu rămâne în modul incognito și dispare dacă ștergi datele browserului. Ca să continui pe alt telefon sau laptop, copiază codul de transfer și încarcă-l acolo.</p>
+  <div class="tb"><button class="btn ghost" data-act="export">Copiază codul de transfer</button><button class="btn ghost" data-act="import">Încarcă un cod</button><button class="btn ghost danger" data-act="resetall">Șterge tot progresul</button></div><div id="xfer"></div></details>
+  <footer class="foot">Exerciții construite pe baza suportului de curs, ASE București, Facultatea de Management. Cifrele din calcule sunt generate aleator: fiecare student primește alte date.</footer>`;
+}
+function drawPath(){
+  const map=$("#map"),svg=$("#path");if(!map||!svg)return;const r0=map.getBoundingClientRect();
+  const pts=[...map.querySelectorAll(".node .hall")].map(e=>{const r=e.getBoundingClientRect();return[r.left-r0.left+r.width/2,r.top-r0.top+r.height*0.62];});
+  svg.setAttribute("width",r0.width);svg.setAttribute("height",r0.height);svg.setAttribute("viewBox",`0 0 ${r0.width} ${r0.height}`);
+  let d=`M${pts[0][0]} ${pts[0][1]}`;for(let i=1;i<pts.length;i++){const [x0,y0]=pts[i-1],[x1,y1]=pts[i];const my=(y0+y1)/2;d+=` C${x0} ${my} ${x1} ${my} ${x1} ${y1}`;}
+  const doneN=MODULES.filter(m=>modState(m.id)===2).length;
+  svg.innerHTML=`<path d="${d}" class="pbase"/><path d="${d}" class="pdash"/>`;
+}
+
+/* ===== VIEW: INTRO MODUL ===== */
+function intro(mid){
+  const m=modMeta(mid),st=ms(mid),s=modStats(mid);const best=st.best;
+  const primary=st.over?`<button class="btn big" data-act="gameover">Hala s-a oprit: vezi ce recapitulezi</button><button class="btn big" data-act="restart">Reia lecția</button>`:s.checked===0?`<button class="btn big" data-act="start">Începe lecția</button>`:s.checked<s.total?`<button class="btn big" data-act="resume">Continuă de la ${Math.min(st.pos,s.total-1)+1} din ${s.total}</button>`:`<button class="btn big" data-act="review">Revezi răspunsurile</button>`;
+  return`<div class="lt"><a href="#/" class="x" aria-label="Înapoi la hartă">✕</a></div>
+  <section class="mi" style="--c:${HUE[m.nr-1]}">${scene(m.nr)}<p class="kick">${mid==="final"?"Recapitulare":"Hala "+m.nr} · ${m.src}</p><h1>${m.title}</h1>
+  <div class="mst">${best!=null?`<span class="stz">${"★".repeat(starsFor(best))}${"☆".repeat(3-starsFor(best))}</span><span>Cel mai bun scor: <b>${best}%</b></span>`:`<span>${s.total} itemi · aproximativ ${Math.round(s.total*1.3)} minute</span>`}</div>
+  <div class="keyc"><h2>Idei-cheie</h2><ul>${m.key.map(k=>`<li>${k}</li>`).join("")}</ul></div>
+  <div class="mact">${primary}${s.checked>0&&!st.over?`<button class="btn ghost" data-act="reset">Reia lecția de la zero</button>`:""}</div>${mid!=="final"?`<p class="rule"><span class="hrt on">♥</span><span class="hrt on">♥</span><span class="hrt on">♥</span> Ai 3 vieți. La teorie, orice răspuns incomplet costă o viață; la calcule, doar un rezultat sub 50% corect. După a treia greșeală vezi răspunsurile corecte și reiei lecția.</p>`:""}</section>`;
+}
+
+/* ===== VIEW: CARD ===== */
+function card(mid,pos){
+  const ids=itemsOf(mid),st=ms(mid);pos=Math.max(0,Math.min(pos,ids.length-1));st.pos=pos;save();
+  const iid=ids[pos];const {h,g,def,st:ist}=itemBody(mid,iid);const kind=def.type==="mcq"&&def.case?"case":def.type;
+  const segs=ids.map((x,k)=>{const s=st.items[x];const c=s&&s.checked?(s.score>=0.999?"ok":s.score>0?"pt":"no"):"";return`<button class="seg ${c} ${k===pos?"cur":""}" data-go="${k}" aria-label="Itemul ${k+1}"></button>`;}).join("");
+  const can=complete(def,ist,g);
+  let foot;
+  if(!ist.checked)foot=`<div class="cta"><button class="btn big full" data-act="check" ${can?"":"disabled"}>Verifică</button></div>`;
+  else{const ok=ist.score>=0.999,pt=ist.score>0&&!ok;const corr=ok?"":def.type==="mcq"?`<p class="corr">Răspunsul corect: <b>${def.opts[def.a]}</b></p>`:def.type==="calc"?"":`<p class="corr">Răspunsurile corecte sunt marcate cu verde mai sus.</p>`;
+    const sol=def.type==="calc"?`<details class="sol" ${ok?"":"open"}><summary>Vezi rezolvarea pas cu pas</summary>${g.sol}</details>`:`${corr}<p>${def.ex}</p>`;
+    const lost=st.lastLost===iid?`<p class="lifel">Ai pierdut o viață. ${st.over?"Hala s-a oprit.":`Mai ai ${3-st.mistakes}.`}</p>`:"";
+    const all=modStats(mid).checked===ids.length;const last=all&&(!st.reviewing||pos===ids.length-1);
+    foot=`<div class="sheet ${ok?"ok":pt?"pt":"no"}" role="status"><div class="sh"><span class="si">${ok?"✓":pt?"◐":"✕"}</span><b>${ok?pick(["Corect!","Excelent!","Exact așa!","Perfect!"],iid):pt?`Parțial corect: ${pct(ist.score)}%`:"Nu de data asta"}</b></div><div class="sb">${lost}${sol}</div>
+    <div class="sa">${st.over?`<button class="btn big" data-act="gameover">Vezi ce trebuie recapitulat</button>`:`${def.type==="calc"&&mid!=="final"?`<button class="btn ghost" data-act="regen">Alte cifre</button>`:""}<button class="btn big" data-act="${last?"finish":"next"}">${last?"Vezi rezultatul":"Continuă"}</button>`}</div></div>`;}
+  return`<div class="lt"><a href="#/${mid}" class="x" aria-label="Închide lecția">✕</a><div class="segs">${segs}</div>${mid!=="final"?`<span class="lives" aria-label="${3-(st.mistakes||0)} vieți rămase">${[0,1,2].map(i=>`<span class="hrt ${i<3-(st.mistakes||0)?"on":"off"} ${i===3-(st.mistakes||0)&&st.lastLost===iid?"lost":""}">♥</span>`).join("")}</span>`:""}<span class="streak ${S.streak>=3?"hot":""}" title="Serie de răspunsuri corecte">🔥 ${S.streak}</span></div>
+  <article class="card ${ist.checked?(ist.score>=0.999?"ok":ist.score>0?"pt":"no"):""}" data-iid="${iid}"><div class="ck"><span class="tag t-${kind}">${def.type==="calc"?"Calcul":typeLabel[kind]}</span><span class="cn">${pos+1} / ${ids.length}</span></div>${h}</article>${foot}`;
+}
+const pick=(a,s)=>a[[...s].reduce((x,c)=>x+c.charCodeAt(0),0)%a.length];
+
+/* ===== VIEW: REZULTAT ===== */
+function result(mid){
+  const m=modMeta(mid),st=ms(mid),s=modStats(mid),p=pct(s.score),n=starsFor(p);
+  const nb=(st.newBadges||[]).map(id=>BADGES.find(b=>b.id===id)).filter(Boolean);
+  const msg=p>=90?"Hala funcționează impecabil.":p>=75?"Producție bună. Mai e loc de reglaje fine.":p>=50?"Hala merge, dar cu opriri. Revezi ideile-cheie.":"Hala are nevoie de revizie. Recitește capitolul și reia lecția.";
+  const nextM=mid!=="final"&&m.nr<10?`<a class="btn big" href="#/m${m.nr+1}">Hala ${m.nr+1}</a>`:mid!=="final"?`<a class="btn big" href="#/final">Testul final</a>`:"";
+  return`<section class="res"><div class="rstars">${[0,1,2].map(i=>`<span class="rs ${i<n?"on":""}" style="--d:${i*0.18+0.2}s">★</span>`).join("")}</div>
+  <p class="kick">${m.title}</p><p class="rp">${p}%</p><p class="rm">${msg}</p>
+  <div class="rgrid"><div><b>+${st.xpRun||0}</b><span>XP câștigat</span></div><div><b>${s.total}</b><span>itemi rezolvați</span></div><div><b>${st.best}%</b><span>cel mai bun</span></div></div>
+  ${nb.length?`<div class="rnb"><h2>Insigne noi</h2>${nb.map(b=>`<div class="bdg has pop"><span class="be">${b.e}</span><span class="bn">${b.n}</span><span class="bd">${b.d}</span></div>`).join("")}</div>`:""}
+  <div class="mact">${nextM}<a class="btn ghost" href="#/">Harta fabricii</a><button class="btn ghost" data-act="review">Revezi răspunsurile</button><button class="btn ghost" data-act="reset">Reia lecția</button></div></section>`;
+}
+
+/* ===== VIEW: HALA OPRITĂ ===== */
+function over(mid){
+  const m=modMeta(mid),st=ms(mid);
+  const list=(st.mistakeIds||[]).map(iid=>{const def=itemDef(mid,iid),ist=is(mid,iid);let yours="",right="",extra="";
+    if(def.type==="mcq"){yours=def.opts[Number(ist.vals.c)];right=def.opts[def.a];extra=`<p>${def.ex}</p>`;}
+    if(def.type==="classify"){extra=`<ul class="fixl">${def.rows.map((r,k)=>Number(ist.vals["r"+k])===r[1]?"":`<li>${r[0]}: <s>${def.cats[Number(ist.vals["r"+k])]}</s> <b>${def.cats[r[1]]}</b></li>`).join("")}</ul><p>${def.ex}</p>`;}
+    if(def.type==="order"){yours=def.steps.map((s,k)=>def.steps[Number(ist.vals["p"+k])]).join(" → ");right=def.steps.join(" → ");extra=`<p>${def.ex}</p>`;}
+    if(def.type==="calc"){const g=genOf(def,ist);extra=`<ul class="fixl">${g.fields.map((f,k)=>fieldOk(f,ist.vals["f"+k])?"":`<li>${f.label}: <s>${f.type==="select"?(f.options[Number(ist.vals["f"+k])]??"–"):esc(ist.vals["f"+k]??"–")}</s> <b>${f.type==="select"?f.options[f.ans]:nfx(f)}</b></li>`).join("")}</ul><details class="sol"><summary>Rezolvarea pas cu pas</summary>${g.sol}</details>`;}
+    return`<li class="mis"><span class="tag t-${def.type==="mcq"&&def.case?"case":def.type}">${def.type==="calc"?"Calcul":typeLabel[def.type==="mcq"&&def.case?"case":def.type]}</span><h3>${def.type==="calc"?def.title:def.q}</h3>${yours?`<p class="yr">Ai răspuns: <s>${yours}</s></p>`:""}${right?`<p class="rr">Corect: <b>${right}</b></p>`:""}${extra}</li>`;}).join("");
+  return`<div class="lt"><a href="#/" class="x" aria-label="Înapoi la hartă">✕</a></div>
+  <section class="ovr"><div class="ovi">${hall(m.nr,0,0)}<span class="warn">!</span></div><h1>Hala s-a oprit</h1><p>Ai greșit de 3 ori în această lecție. Citește răspunsurile corecte, apoi pornește din nou hala. Vei primi alte cifre la calcule și altă ordine a variantelor.</p>
+  <ol class="misl">${list}</ol><div class="mact"><button class="btn big" data-act="restart">Repornește hala</button><a class="btn ghost" href="#/">Harta fabricii</a></div></section>`;
+}
+
+/* ===== XP, INSIGNE ===== */
+function award(id){if(S.badges[id])return;S.badges[id]=Date.now();toast(`${BADGES.find(b=>b.id===id).e} Insignă nouă: ${BADGES.find(b=>b.id===id).n}`);if(cur.mid&&S.mods[cur.mid])(S.mods[cur.mid].newBadges=S.mods[cur.mid].newBadges||[]).push(id);}
+function onChecked(mid,def,ist){
+  const ok=ist.score>=0.999;const before=gradeOf(S.xp).i;
+  let gain=Math.round((def.type==="calc"?20:10)*ist.score);
+  if(ok){S.streak++;if(S.streak>=3)gain+=5;}else S.streak=0;
+  S.bestStreak=Math.max(S.bestStreak||0,S.streak);S.xp+=gain;ms(mid).xpRun=(ms(mid).xpRun||0)+gain;
+  if(S.streak>=5)award("streak5");if(S.streak>=10)award("streak10");
+  if(ok&&def.gen&&["agregat","mrp","johnson","eoq"].includes(def.gen))award(def.gen);
+  const after=gradeOf(S.xp).i;if(after>before)toast(`${GRADES[after].e} Ai avansat: ${GRADES[after].n}!`,true);
+  buzz(ok?18:[35,40,35]);
+  return gain;
+}
+function resetLesson(st){st.items={};st._final=false;st.seed=newSeed();st.pos=0;st.xpRun=0;st.newBadges=[];st.mistakes=0;st.mistakeIds=[];st.over=false;st.lastLost=null;st.reviewing=false;}
+function finalize(mid){
+  const st=ms(mid),s=modStats(mid);if(st._final)return;
+  st._final=true;st.attempts=(st.attempts||0)+1;st.last=pct(s.score);st.best=Math.max(st.best??0,st.last);st.done=true;
+  if(mid!=="final"){award("first");if(st.last===100)award("perfect");const d=MODULES.filter(m=>modState(m.id)===2).length;if(d>=5)award("half");if(d>=10)award("all");}
+  else if(st.last>=80)award("final");
+  save(true);
+}
+
+/* ===== TOAST, CONFETTI, XP FLOAT ===== */
+function toast(t,big){const n=document.querySelectorAll(".toast:not(.out)").length;const el=document.createElement("div");el.style.top=(14+n*62)+"px";el.className="toast"+(big?" big":"");el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.classList.add("out"),2600);setTimeout(()=>el.remove(),3200);}
+function floatXP(n,el){if(!n||!el)return;const f=document.createElement("span");f.className="xpf";f.textContent=`+${n} XP`;const r=el.getBoundingClientRect();f.style.left=(r.left+r.width/2)+"px";f.style.top=(r.top+window.scrollY-28)+"px";f.style.left=(r.right-50)+"px";document.body.appendChild(f);setTimeout(()=>f.remove(),1300);}
+function confetti(){if(RM())return;const c=document.createElement("canvas");c.className="conf";document.body.appendChild(c);const x=c.getContext("2d");const W=c.width=innerWidth,H=c.height=innerHeight;
+  const P=Array.from({length:140},()=>({x:W/2+(Math.random()-.5)*80,y:H*0.35,vx:(Math.random()-.5)*11,vy:-Math.random()*12-4,r:Math.random()*6+4,c:HUE[Math.floor(Math.random()*11)],a:Math.random()*6,s:(Math.random()-.5)*.3}));
+  let t=0;(function fr(){t++;x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.32;p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.a+=p.s;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/3,p.r,p.r*.66);x.restore();});if(t<170)requestAnimationFrame(fr);else c.remove();})();}
+
+/* ===== ROUTER ===== */
+let cur={mid:null,view:"home"};
+function render(anim){
+  const app=$("#app");let html;
+  if(cur.view==="home")html=home();else if(cur.view==="intro")html=intro(cur.mid);else if(cur.view==="card")html=card(cur.mid,ms(cur.mid).pos);else if(cur.view==="over")html=over(cur.mid);else html=result(cur.mid);
+  app.className="v-"+cur.view;app.innerHTML=html;
+  if(anim&&!RM()){const c=$(".card")||$(".mi")||$(".res");if(c){c.classList.add("in-"+anim);}}
+  if(cur.view==="home"){requestAnimationFrame(drawPath);}
+  if(cur.view==="result"){const p=pct(modStats(cur.mid).score);if(p>=75)setTimeout(confetti,250);}
+}
+function route(){document.querySelectorAll('.conf,.toast').forEach(c=>c.remove());
+  const h=location.hash.replace(/^#\/?/,"");const mid=h&&(h==="final"||modById(h))?h:null;
+  cur=mid?{mid,view:"intro"}:{mid:null,view:"home"};
+  document.title=mid?modMeta(mid).title+" | Management operațional":"Management operațional | Construiește-ți fabrica";
+  render("up");window.scrollTo(0,0);
+}
+function goCard(pos,dir){ms(cur.mid).pos=pos;cur.view="card";render(dir||"right");window.scrollTo(0,0);}
+window.addEventListener("resize",()=>{if(cur.view==="home")drawPath();});
+
+/* ===== EVENIMENTE ===== */
+function setVal(k,v){const ids=itemsOf(cur.mid);const iid=ids[ms(cur.mid).pos];const ist=is(cur.mid,iid);ist.vals[k]=v;save();return{iid,ist,def:itemDef(cur.mid,iid)};}
+function refreshCTA(){const ids=itemsOf(cur.mid);const iid=ids[ms(cur.mid).pos];const ist=is(cur.mid,iid),def=itemDef(cur.mid,iid);const g=def.type==="calc"?genOf(def,ist):null;const b=$('[data-act="check"]');if(b)b.disabled=!complete(def,ist,g);}
+document.addEventListener("input",e=>{
+  if(cur.view!=="card")return;const el=e.target;if(!el.dataset.k)return;setVal(el.dataset.k,el.value);
+  if(el.type==="radio"){document.querySelectorAll(".opt").forEach(o=>o.classList.toggle("sel",o.querySelector("input").checked));buzz(8);}
+  refreshCTA();
+});
+document.addEventListener("click",e=>{
+  const chip=e.target.closest(".chip[data-k]");
+  if(chip&&cur.view==="card"&&!chip.disabled){setVal(chip.dataset.k,chip.dataset.v);chip.parentElement.querySelectorAll(".chip").forEach(c=>{c.classList.toggle("on",c===chip);c.setAttribute("aria-pressed",c===chip);});buzz(8);refreshCTA();return;}
+  const pl=e.target.closest("[data-place]");
+  if(pl&&cur.view==="card"){const ids=itemsOf(cur.mid);const ist=is(cur.mid,ids[ms(cur.mid).pos]);const def=itemDef(cur.mid,ids[ms(cur.mid).pos]);const k=def.steps.findIndex((s,i)=>ist.vals["p"+i]===undefined||ist.vals["p"+i]==="");if(k>=0){ist.vals["p"+k]=pl.dataset.place;save();buzz(8);render();}return;}
+  const go=e.target.closest("[data-go]");if(go){const k=Number(go.dataset.go),p=ms(cur.mid).pos;if(k!==p)goCard(k,k>p?"right":"left");return;}
+  const b=e.target.closest("[data-act]");if(!b)return;const act=b.dataset.act;
+  if(act==="start"){const st=ms(cur.mid);st.reviewing=false;st.xpRun=0;st.newBadges=[];goCard(0);}
+  if(act==="resume"){const st=ms(cur.mid);st.reviewing=false;const ids=itemsOf(cur.mid);let p=ids.findIndex(i=>!(st.items[i]&&st.items[i].checked));goCard(p<0?0:p);}
+  if(act==="review"){ms(cur.mid).reviewing=true;goCard(0);}
+  if(act==="undo"){const ids=itemsOf(cur.mid);const ist=is(cur.mid,ids[ms(cur.mid).pos]);const def=itemDef(cur.mid,ids[ms(cur.mid).pos]);for(let k=def.steps.length-1;k>=0;k--){if(ist.vals["p"+k]!==undefined&&ist.vals["p"+k]!==""){delete ist.vals["p"+k];break;}}save();render();}
+  if(act==="check"){const ids=itemsOf(cur.mid);const iid=ids[ms(cur.mid).pos];const ist=is(cur.mid,iid),def=itemDef(cur.mid,iid);const g=def.type==="calc"?genOf(def,ist):null;
+    ist.score=grade(def,ist,g);ist.checked=true;const gain=onChecked(cur.mid,def,ist);const mst=ms(cur.mid);mst.lastLost=null;
+    if(cur.mid!=="final"&&isMistake(def,ist.score)){mst.mistakes=(mst.mistakes||0)+1;(mst.mistakeIds=mst.mistakeIds||[]).push(iid);mst.lastLost=iid;if(mst.mistakes>=3){mst.over=true;buzz([80,60,80,60,160]);}}
+    save(true);
+    if(!mst.over&&modStats(cur.mid).checked===ids.length)finalize(cur.mid);
+    render();const c=$(".card");if(c&&!RM())c.classList.add(ist.score>=0.999?"pulse":"shake");floatXP(gain,$(".sheet .sh"));
+    const sh=$(".sheet");if(sh){sh.setAttribute("tabindex","-1");sh.focus({preventScroll:true});}}
+  if(act==="next"){const ids=itemsOf(cur.mid);const st=ms(cur.mid);const all=modStats(cur.mid).checked===ids.length;
+    if(all){if(st.pos<ids.length-1)goCard(st.pos+1);else{st.reviewing=false;cur.view="result";render("up");window.scrollTo(0,0);}}
+    else{let p=ids.findIndex((i,k)=>k>st.pos&&!(st.items[i]&&st.items[i].checked));if(p<0)p=ids.findIndex(i=>!(st.items[i]&&st.items[i].checked));goCard(p);}}
+  if(act==="finish"){ms(cur.mid).reviewing=false;cur.view="result";render("up");window.scrollTo(0,0);}
+  if(act==="regen"){const ids=itemsOf(cur.mid);const ist=is(cur.mid,ids[ms(cur.mid).pos]);ist.seed=newSeed();ist.vals={};ist.checked=false;ist.score=0;ms(cur.mid)._final=false;save(true);render("right");window.scrollTo(0,0);}
+  if(act==="reset"){if(!confirm("Ștergi răspunsurile din această lecție? Cel mai bun scor, XP-ul și insignele rămân."))return;const st=ms(cur.mid);resetLesson(st);save(true);cur.view="intro";render("up");}
+  if(act==="gameover"){cur.view="over";render("up");window.scrollTo(0,0);}
+  if(act==="restart"){const st=ms(cur.mid);resetLesson(st);save(true);goCard(0);}
+  if(act==="export"){const code=btoa(unescape(encodeURIComponent(JSON.stringify(Object.assign({},S,{deviceId:undefined})))));
+    $("#xfer").innerHTML=`<label class="fld"><span>Codul tău de transfer</span><textarea readonly rows="4">${code}</textarea></label>`;$("#xfer textarea").select();
+    if(navigator.clipboard)navigator.clipboard.writeText(code).then(()=>toast("Codul a fost copiat")).catch(()=>{});}
+  if(act==="import"){$("#xfer").innerHTML=`<label class="fld"><span>Lipește codul de transfer</span><textarea rows="4" id="imp"></textarea></label><button class="btn" data-act="doimport">Încarcă progresul</button>`;}
+  if(act==="doimport"){try{const o=JSON.parse(decodeURIComponent(escape(atob($("#imp").value.trim()))));if(!o||!o.mods)throw 0;
+      if(!confirm("Progresul de pe acest dispozitiv va fi înlocuit. Continui?"))return;const id=S.deviceId;S=Object.assign(blank(),o.v===2?o:{mods:o.mods});S.v=2;S.deviceId=id;save(true);route();toast("Progres încărcat");}
+    catch(err){$("#xfer").insertAdjacentHTML("beforeend",`<p class="err" role="alert">Codul nu este valid. Copiază-l din nou, complet.</p>`);}}
+  if(act==="resetall"){if(!confirm("Ștergi tot progresul, XP-ul și insignele de pe acest dispozitiv?"))return;const id=S.deviceId;S=blank();S.deviceId=id;save(true);route();}
+});
+document.addEventListener("keydown",e=>{if(cur.view!=="card"||e.target.matches("input,select,textarea"))return;if(e.key==="Enter"){const b=$('[data-act="check"]:not([disabled])')||$('[data-act="next"]')||$('[data-act="finish"]');if(b){e.preventDefault();b.click();}}});
+window.addEventListener("hashchange",route);
+
+/* ===== CONTOR (Google Sheets) ===== */
+function countVisit(){
+  let isNew=false;if(!S.deviceId){S.deviceId=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2));isNew=true;save(true);}
+  if(!COUNTER_URL)return;
+  try{if(sessionStorage.getItem("mo-counted"))return;sessionStorage.setItem("mo-counted","1");}catch(e){}
+  const body=JSON.stringify({deviceId:S.deviceId,newDevice:isNew,device:/Mobi|Android|iPhone/i.test(navigator.userAgent)?"mobil":"desktop"});
+  fetch(COUNTER_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body}).catch(()=>{});
+}
+countVisit();route();
+</script>
+</body>
+</html>
