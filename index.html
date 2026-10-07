@@ -1064,10 +1064,10 @@ function onChecked(mid,def,ist){
   buzz(ok?18:[35,40,35]);
   return gain;
 }
-function resetLesson(st){st.items={};st._final=false;st.seed=newSeed();st.pos=0;st.xpRun=0;st.newBadges=[];st.mistakes=0;st.mistakeIds=[];st.over=false;st.lastLost=null;st.reviewing=false;}
+function resetLesson(st){st.items={};st._final=false;st.seed=newSeed();st.pos=0;st.xpRun=0;st.newBadges=[];st.mistakes=0;st.mistakeIds=[];st.over=false;st.lastLost=null;st.reviewing=false;st.sentFinish=false;}
 function finalize(mid){
   const st=ms(mid),s=modStats(mid);if(st._final)return;
-  st._final=true;st.attempts=(st.attempts||0)+1;st.last=pct(s.score);st.best=Math.max(st.best??0,st.last);st.done=true;
+  st._final=true;st.attempts=(st.attempts||0)+1;st.last=pct(s.score);st.best=Math.max(st.best??0,st.last);st.done=true;if(!st.sentFinish){st.sentFinish=true;track("finish",mid,{score:st.last,attempt:st.attempts});}
   if(mid!=="final"){award("first");if(st.last===100)award("perfect");const d=MODULES.filter(m=>modState(m.id)===2).length;if(d>=5)award("half");if(d>=10)award("all");}
   else if(st.last>=80)award("final");
   save(true);
@@ -1114,7 +1114,7 @@ document.addEventListener("click",e=>{
   if(pl&&cur.view==="card"){const ids=itemsOf(cur.mid);const ist=is(cur.mid,ids[ms(cur.mid).pos]);const def=itemDef(cur.mid,ids[ms(cur.mid).pos]);const k=def.steps.findIndex((s,i)=>ist.vals["p"+i]===undefined||ist.vals["p"+i]==="");if(k>=0){ist.vals["p"+k]=pl.dataset.place;save();buzz(8);render();}return;}
   const go=e.target.closest("[data-go]");if(go){const k=Number(go.dataset.go),p=ms(cur.mid).pos;if(k!==p)goCard(k,k>p?"right":"left");return;}
   const b=e.target.closest("[data-act]");if(!b)return;const act=b.dataset.act;
-  if(act==="start"){const st=ms(cur.mid);st.reviewing=false;st.xpRun=0;st.newBadges=[];goCard(0);}
+  if(act==="start"){const st=ms(cur.mid);st.reviewing=false;st.xpRun=0;st.newBadges=[];track("start",cur.mid);goCard(0);}
   if(act==="resume"){const st=ms(cur.mid);st.reviewing=false;const ids=itemsOf(cur.mid);let p=ids.findIndex(i=>!(st.items[i]&&st.items[i].checked));goCard(p<0?0:p);}
   if(act==="review"){ms(cur.mid).reviewing=true;goCard(0);}
   if(act==="undo"){const ids=itemsOf(cur.mid);const ist=is(cur.mid,ids[ms(cur.mid).pos]);const def=itemDef(cur.mid,ids[ms(cur.mid).pos]);for(let k=def.steps.length-1;k>=0;k--){if(ist.vals["p"+k]!==undefined&&ist.vals["p"+k]!==""){delete ist.vals["p"+k];break;}}save();render();}
@@ -1132,7 +1132,7 @@ document.addEventListener("click",e=>{
   if(act==="regen"){const ids=itemsOf(cur.mid);const ist=is(cur.mid,ids[ms(cur.mid).pos]);ist.seed=newSeed();ist.vals={};ist.checked=false;ist.score=0;ms(cur.mid)._final=false;save(true);render("right");window.scrollTo(0,0);}
   if(act==="reset"){if(!confirm("Ștergi răspunsurile din această lecție? Cel mai bun scor, XP-ul și insignele rămân."))return;const st=ms(cur.mid);resetLesson(st);save(true);cur.view="intro";render("up");}
   if(act==="gameover"){cur.view="over";render("up");window.scrollTo(0,0);}
-  if(act==="restart"){const st=ms(cur.mid);resetLesson(st);save(true);goCard(0);}
+  if(act==="restart"){const st=ms(cur.mid);resetLesson(st);save(true);track("start",cur.mid);goCard(0);}
   if(act==="export"){const code=btoa(unescape(encodeURIComponent(JSON.stringify(Object.assign({},S,{deviceId:undefined})))));
     $("#xfer").innerHTML=`<label class="fld"><span>Codul tău de transfer</span><textarea readonly rows="4">${code}</textarea></label>`;$("#xfer textarea").select();
     if(navigator.clipboard)navigator.clipboard.writeText(code).then(()=>toast("Codul a fost copiat")).catch(()=>{});}
@@ -1145,6 +1145,12 @@ document.addEventListener("click",e=>{
 document.addEventListener("keydown",e=>{if(cur.view!=="card"||e.target.matches("input,select,textarea"))return;if(e.key==="Enter"){const b=$('[data-act="check"]:not([disabled])')||$('[data-act="next"]')||$('[data-act="finish"]');if(b){e.preventDefault();b.click();}}});
 window.addEventListener("hashchange",route);
 
+/* ===== EVENIMENTE PE MODUL (Google Sheets) ===== */
+function track(ev,mid,extra){
+  if(!COUNTER_URL||!S.deviceId)return;
+  const body=JSON.stringify(Object.assign({type:"event",event:ev,module:mid,deviceId:S.deviceId},extra||{}));
+  try{fetch(COUNTER_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body}).catch(()=>{});}catch(e){}
+}
 /* ===== CONTOR (Google Sheets) ===== */
 function countVisit(){
   let isNew=false;if(!S.deviceId){S.deviceId=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(16).slice(2));isNew=true;save(true);}
